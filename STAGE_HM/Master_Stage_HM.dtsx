@@ -1,0 +1,392 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="10/2/2026 12:42:35 PM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="PC"
+  DTS:CreatorName="PC\Usuario"
+  DTS:DTSID="{61E1798B-3603-413D-B21A-BEAFA7C3A36C}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="17.0.1016.0"
+  DTS:LocaleID="10250"
+  DTS:ObjectName="Master_Stage_HM"
+  DTS:PackageType="5"
+  DTS:VersionBuild="27"
+  DTS:VersionGUID="{4932ECAB-0A35-459B-B22D-456DA8E18A6F}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:Variables>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{469CF55A-3CB5-44DD-A0F7-82147BFFFB98}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="AuditKey">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{4C750FD3-4038-4089-A549-B07DFE1A321F}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="RowCount">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{DAC7FE82-9BB7-48C0-A1B5-FAFF47B435FD}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="TableName">
+      <DTS:VariableValue
+        DTS:DataType="8">MasterStageHM</DTS:VariableValue>
+    </DTS:Variable>
+  </DTS:Variables>
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Contenedor de secuencias"
+      DTS:CreationName="STOCK:SEQUENCE"
+      DTS:Description="Contenedor de secuencias"
+      DTS:DTSID="{1060ebac-c824-473b-b769-525e8295a678}"
+      DTS:ExecutableType="STOCK:SEQUENCE"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Contenedor de secuencias">
+      <DTS:Variables />
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\Contenedor de secuencias\StageArticle"
+          DTS:CreationName="Microsoft.ExecutePackageTask"
+          DTS:Description="StageArticle"
+          DTS:DTSID="{F1E16298-9A6E-4DAC-8800-7BDD19A6B8B2}"
+          DTS:ExecutableType="Microsoft.ExecutePackageTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="StageArticle"
+          DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <ExecutePackageTask>
+              <UseProjectReference>True</UseProjectReference>
+              <PackageName>StageArticle.dtsx</PackageName>
+            </ExecutePackageTask>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Contenedor de secuencias\StageCustomer"
+          DTS:CreationName="Microsoft.ExecutePackageTask"
+          DTS:Description="StageCustomer"
+          DTS:DTSID="{ae0ae559-6360-46b7-a110-1fb99b21fc69}"
+          DTS:ExecutableType="Microsoft.ExecutePackageTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="StageCustomer"
+          DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <ExecutePackageTask>
+              <UseProjectReference>True</UseProjectReference>
+              <PackageName>StageCustomer.dtsx</PackageName>
+            </ExecutePackageTask>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Contenedor de secuencias\StageDimFecha"
+          DTS:CreationName="Microsoft.ExecutePackageTask"
+          DTS:Description="StageDimFecha"
+          DTS:DTSID="{4c623369-d4fa-4402-abb8-8f7d28104064}"
+          DTS:ExecutableType="Microsoft.ExecutePackageTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="StageDimFecha"
+          DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <ExecutePackageTask>
+              <UseProjectReference>True</UseProjectReference>
+              <PackageName>StageDimFecha.dtsx</PackageName>
+            </ExecutePackageTask>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Contenedor de secuencias\StageGoalsHyM"
+          DTS:CreationName="Microsoft.ExecutePackageTask"
+          DTS:Description="StageGoalsHyM"
+          DTS:DTSID="{624e5ab9-a576-4c6c-847f-a7fb516a6273}"
+          DTS:ExecutableType="Microsoft.ExecutePackageTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="StageGoalsHyM"
+          DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <ExecutePackageTask>
+              <UseProjectReference>True</UseProjectReference>
+              <PackageName>StageGoalsHyM.dtsx</PackageName>
+            </ExecutePackageTask>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Contenedor de secuencias\StageTemporada"
+          DTS:CreationName="Microsoft.ExecutePackageTask"
+          DTS:Description="StageTemporada"
+          DTS:DTSID="{7d1b9be8-9a7f-4679-b384-896bf2030fca}"
+          DTS:ExecutableType="Microsoft.ExecutePackageTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="StageTemporada"
+          DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <ExecutePackageTask>
+              <UseProjectReference>True</UseProjectReference>
+              <PackageName>StageTemporada.dtsx</PackageName>
+            </ExecutePackageTask>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Contenedor de secuencias\StageTransaction"
+          DTS:CreationName="Microsoft.ExecutePackageTask"
+          DTS:Description="StageTransaction"
+          DTS:DTSID="{98a8633c-e774-4245-87f5-5f29f1d22ad8}"
+          DTS:ExecutableType="Microsoft.ExecutePackageTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="StageTransaction"
+          DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <ExecutePackageTask>
+              <UseProjectReference>True</UseProjectReference>
+              <PackageName>StageTransaction.dtsx</PackageName>
+            </ExecutePackageTask>
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Task Get AuditKey"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Task Get AuditKey"
+      DTS:DTSID="{49592df6-c67f-43bf-b97b-35fa6e895f36}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Task Get AuditKey"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2025; © 2025 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{4F933CBA-0D6B-4F5D-86BE-967AAD556B06}"
+          SQLTask:SqlStatementSource="INSERT INTO [DIM_AUDIT] ([TableName], [PkgName], [PkgGUID], [ExecStartDT], [ExecStopDT], [ExecutionInstanceGUID], [ExtractRowCnt], [TableInitialRowCnt], [TableFinalRowCnt], [SuccessfulProcessingInd])&#xA;VALUES (@TableName, @PkgName, @PkgGUID, @StartTime, NULL, @PkgExecGUID, NULL, NULL, NULL, 'N')&#xA;SELECT CAST(SCOPE_IDENTITY() AS INT) AS AuditKey"
+          SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+          <SQLTask:ResultBinding
+            SQLTask:ResultName="0"
+            SQLTask:DtsVariableName="User::AuditKey" />
+          <SQLTask:ParameterBinding
+            SQLTask:ParameterName="StartTime"
+            SQLTask:DtsVariableName="System::StartTime"
+            SQLTask:ParameterDirection="Input"
+            SQLTask:DataType="26"
+            SQLTask:ParameterSize="-1" />
+          <SQLTask:ParameterBinding
+            SQLTask:ParameterName="PkgName"
+            SQLTask:DtsVariableName="System::PackageName"
+            SQLTask:ParameterDirection="Input"
+            SQLTask:DataType="16"
+            SQLTask:ParameterSize="-1" />
+          <SQLTask:ParameterBinding
+            SQLTask:ParameterName="PkgGUID"
+            SQLTask:DtsVariableName="System::PackageID"
+            SQLTask:ParameterDirection="Input"
+            SQLTask:DataType="9"
+            SQLTask:ParameterSize="-1" />
+          <SQLTask:ParameterBinding
+            SQLTask:ParameterName="PkgExecGUID"
+            SQLTask:DtsVariableName="System::ExecutionInstanceGUID"
+            SQLTask:ParameterDirection="Input"
+            SQLTask:DataType="9"
+            SQLTask:ParameterSize="-1" />
+          <SQLTask:ParameterBinding
+            SQLTask:ParameterName="TableName"
+            SQLTask:DtsVariableName="User::TableName"
+            SQLTask:ParameterDirection="Input"
+            SQLTask:DataType="16"
+            SQLTask:ParameterSize="-1" />
+          <SQLTask:ParameterBinding
+            SQLTask:ParameterName="RowCount"
+            SQLTask:DtsVariableName="User::RowCount"
+            SQLTask:ParameterDirection="Input"
+            SQLTask:DataType="11"
+            SQLTask:ParameterSize="-1" />
+        </SQLTask:SqlTaskData>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Update AuditDim"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Update AuditDim"
+      DTS:DTSID="{dc061ce4-89b9-4562-8da8-60e5a2c520ea}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Update AuditDim"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2025; © 2025 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{4F933CBA-0D6B-4F5D-86BE-967AAD556B06}"
+          SQLTask:SqlStatementSource="UPDATE [DIM_AUDIT]&#xA;SET ExecStopDT = SYSDATETIME(), SuccessfulProcessingInd = 'Y'&#xA;WHERE AuditKey = @AuditKey;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+          <SQLTask:ParameterBinding
+            SQLTask:ParameterName="RowCount"
+            SQLTask:DtsVariableName="User::RowCount"
+            SQLTask:ParameterDirection="Input"
+            SQLTask:DataType="11"
+            SQLTask:ParameterSize="-1" />
+          <SQLTask:ParameterBinding
+            SQLTask:ParameterName="AuditKey"
+            SQLTask:DtsVariableName="User::AuditKey"
+            SQLTask:ParameterDirection="Input"
+            SQLTask:DataType="11"
+            SQLTask:ParameterSize="-1" />
+        </SQLTask:SqlTaskData>
+      </DTS:ObjectData>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:PrecedenceConstraints>
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Restricción]"
+      DTS:CreationName=""
+      DTS:DTSID="{8d25121d-b978-4a06-a308-9da981e89571}"
+      DTS:From="Package\Task Get AuditKey"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Restricción"
+      DTS:To="Package\Contenedor de secuencias" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Restricción 1]"
+      DTS:CreationName=""
+      DTS:DTSID="{dd849762-b80c-4910-b640-a298a7788e6e}"
+      DTS:From="Package\Contenedor de secuencias"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Restricción 1"
+      DTS:To="Package\Update AuditDim" />
+  </DTS:PrecedenceConstraints>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--Esta sección CDATA contiene la información de diseño del paquete. Esta sección incluye información como, por ejemplo, las coordenadas (x,y), el ancho y el alto.-->
+<!--Si edita manualmente esta sección y comete un error, puede eliminarlo. -->
+<!--El paquete podrá cargarse normalmente, pero se perderá la información de diseño anterior y el diseñador reorganizará los elementos automáticamente en la superficie de diseño.-->
+<Objects
+  Version="8">
+  <!--Cada uno de los nodos siguientes contiene propiedades que no afectan al comportamiento en tiempo de ejecución.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        <NodeLayout
+          Size="135,42"
+          Id="Package\Contenedor de secuencias\StageArticle"
+          TopLeft="5.5,5.5" />
+        <NodeLayout
+          Size="151,42"
+          Id="Package\Contenedor de secuencias\StageCustomer"
+          TopLeft="14.4999999999999,73.5" />
+        <NodeLayout
+          Size="152,42"
+          Id="Package\Contenedor de secuencias\StageDimFecha"
+          TopLeft="195,5.5" />
+        <NodeLayout
+          Size="152,42"
+          Id="Package\Contenedor de secuencias\StageGoalsHyM"
+          TopLeft="194,76.4999999999999" />
+        <NodeLayout
+          Size="159,42"
+          Id="Package\Contenedor de secuencias\StageTemporada"
+          TopLeft="364.5,5.49999999999989" />
+        <NodeLayout
+          Size="160,42"
+          Id="Package\Contenedor de secuencias\StageTransaction"
+          TopLeft="370.5,71.7499999999999" />
+        <ContainerLayout
+          HeaderHeight="43"
+          IsExpanded="True"
+          PanelSize="543,149"
+          Size="543,192"
+          Id="Package\Contenedor de secuencias"
+          TopLeft="183.5,125.166666666667" />
+        <NodeLayout
+          Size="165,42"
+          Id="Package\Task Get AuditKey"
+          TopLeft="290,43.4999999999999" />
+        <NodeLayout
+          Size="159,42"
+          Id="Package\Update AuditDim"
+          TopLeft="345,396.5" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Restricción]"
+          TopLeft="372.5,85.4999999999999">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="82.4999999999998,39.6666666666668"
+              Start="0,0"
+              End="82.4999999999998,32.1666666666668">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,15.8333333333334" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,15.8333333333334"
+                    Point2="0,19.8333333333334"
+                    Point3="4,19.8333333333334" />
+                  <mssgle:LineSegment
+                    End="78.4999999999998,19.8333333333334" />
+                  <mssgle:CubicBezierSegment
+                    Point1="78.4999999999998,19.8333333333334"
+                    Point2="82.4999999999998,19.8333333333334"
+                    Point3="82.4999999999998,23.8333333333334" />
+                  <mssgle:LineSegment
+                    End="82.4999999999998,32.1666666666668" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Restricción 1]"
+          TopLeft="455,317.166666666667">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-30.4999999999998,79.3333333333335"
+              Start="0,0"
+              End="-30.4999999999998,71.8333333333335">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,35.6666666666667" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,35.6666666666667"
+                    Point2="0,39.6666666666667"
+                    Point3="-4,39.6666666666667" />
+                  <mssgle:LineSegment
+                    End="-26.4999999999998,39.6666666666667" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-26.4999999999998,39.6666666666667"
+                    Point2="-30.4999999999998,39.6666666666667"
+                    Point3="-30.4999999999998,43.6666666666667" />
+                  <mssgle:LineSegment
+                    End="-30.4999999999998,71.8333333333335" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>

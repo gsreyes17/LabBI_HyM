@@ -1,0 +1,408 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="10/3/2026 4:21:53 PM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="PC"
+  DTS:CreatorName="PC\Usuario"
+  DTS:DTSID="{903FA1D6-24C8-4DF1-BE8A-FB35809B9317}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="17.0.1016.0"
+  DTS:LocaleID="10250"
+  DTS:ObjectName="DimTemporada"
+  DTS:PackageType="5"
+  DTS:VersionBuild="9"
+  DTS:VersionGUID="{0CDFEC92-F3AD-4DE3-8CD9-FECC897518DB}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:Variables>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{E0382D35-DBD6-4384-8DDC-20DF7A4C11A9}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="AuditKey">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{8A6277A6-5C44-44F3-8476-AF4B6BEB0B67}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="RowCount">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{EDA40786-0A39-456C-A87D-E4530C196F2F}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="TableName">
+      <DTS:VariableValue
+        DTS:DataType="8">[Sales].[DimTemporada]</DTS:VariableValue>
+    </DTS:Variable>
+  </DTS:Variables>
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Execute procedure"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute procedure"
+      DTS:DTSID="{682DD3F5-6F81-47C9-9115-6C227A90164E}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Execute procedure"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2025; © 2025 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{6A173C8B-30C1-4F61-B6EF-378748888835}"
+          SQLTask:SqlStatementSource="EXECUTE Sales.sp_DimTemporada" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Task Get AuditKey"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Task Get AuditKey"
+      DTS:DTSID="{67307B52-F272-4A33-A72C-2C3381F5852D}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Task Get AuditKey"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2025; © 2025 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{6A173C8B-30C1-4F61-B6EF-378748888835}"
+          SQLTask:SqlStatementSource="INSERT INTO [DIM_AUDIT]&#xA;(&#xA;    [TableName], [PkgName], [PkgGUID], [ExecStartDT], [ExecStopDT],  [ExecutionInstanceGUID], [ExtractRowCnt], [TableInitialRowCnt],&#xA;    [TableFinalRowCnt], [SuccessfulProcessingInd]&#xA;)&#xA;VALUES&#xA;(&#xA;    @TableName, @PkgName, @PkgGUID, @StartTime, NULL, @PkgExecGUID, NULL, @RowCount, NULL, 'N'&#xA;);&#xA;&#xA;SELECT CAST(SCOPE_IDENTITY() AS INT) AS AuditKey;"
+          SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+          <SQLTask:ResultBinding
+            SQLTask:ResultName="0"
+            SQLTask:DtsVariableName="User::AuditKey" />
+          <SQLTask:ParameterBinding
+            SQLTask:ParameterName="StartTime"
+            SQLTask:DtsVariableName="System::StartTime"
+            SQLTask:ParameterDirection="Input"
+            SQLTask:DataType="26"
+            SQLTask:ParameterSize="-1" />
+          <SQLTask:ParameterBinding
+            SQLTask:ParameterName="PkgName"
+            SQLTask:DtsVariableName="System::PackageName"
+            SQLTask:ParameterDirection="Input"
+            SQLTask:DataType="16"
+            SQLTask:ParameterSize="-1" />
+          <SQLTask:ParameterBinding
+            SQLTask:ParameterName="PkgGUID"
+            SQLTask:DtsVariableName="System::PackageID"
+            SQLTask:ParameterDirection="Input"
+            SQLTask:DataType="9"
+            SQLTask:ParameterSize="-1" />
+          <SQLTask:ParameterBinding
+            SQLTask:ParameterName="PkgExecGUID"
+            SQLTask:DtsVariableName="System::ExecutionInstanceGUID"
+            SQLTask:ParameterDirection="Input"
+            SQLTask:DataType="9"
+            SQLTask:ParameterSize="-1" />
+          <SQLTask:ParameterBinding
+            SQLTask:ParameterName="TableName"
+            SQLTask:DtsVariableName="User::TableName"
+            SQLTask:ParameterDirection="Input"
+            SQLTask:DataType="16"
+            SQLTask:ParameterSize="-1" />
+          <SQLTask:ParameterBinding
+            SQLTask:ParameterName="RowCount"
+            SQLTask:DtsVariableName="User::RowCount"
+            SQLTask:ParameterDirection="Input"
+            SQLTask:DataType="11"
+            SQLTask:ParameterSize="-1" />
+        </SQLTask:SqlTaskData>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Task Post RowCnt"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Task Post RowCnt"
+      DTS:DTSID="{B1D9C79A-5A49-4015-8727-99EF77C24772}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Task Post RowCnt"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2025; © 2025 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:PropertyExpression
+        DTS:Name="SqlStatementSource">"SELECT COUNT(1) AS RowCnt FROM " + @[User::TableName]</DTS:PropertyExpression>
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{6A173C8B-30C1-4F61-B6EF-378748888835}"
+          SQLTask:SqlStatementSource="SELECT COUNT(1) AS RowCnt FROM [Sales].[DimTemporada]"
+          SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+          <SQLTask:ResultBinding
+            SQLTask:ResultName="0"
+            SQLTask:DtsVariableName="User::RowCount" />
+        </SQLTask:SqlTaskData>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Task Prior RowCnt"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Task Prior RowCnt"
+      DTS:DTSID="{5A13EFC1-FD74-4811-ADB2-1E0688B82300}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Task Prior RowCnt"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2025; © 2025 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:PropertyExpression
+        DTS:Name="SqlStatementSource">"SELECT COUNT(1) AS RowCnt FROM " + @[User::TableName]</DTS:PropertyExpression>
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{6A173C8B-30C1-4F61-B6EF-378748888835}"
+          SQLTask:SqlStatementSource="SELECT COUNT(1) AS RowCnt FROM [Sales].[DimTemporada]"
+          SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+          <SQLTask:ResultBinding
+            SQLTask:ResultName="0"
+            SQLTask:DtsVariableName="User::RowCount" />
+        </SQLTask:SqlTaskData>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Update AuditDim"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Update AuditDim"
+      DTS:DTSID="{91B9CDC6-1018-4D45-B353-4B86C6066999}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Update AuditDim"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2025; © 2025 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{6A173C8B-30C1-4F61-B6EF-378748888835}"
+          SQLTask:SqlStatementSource="UPDATE [DIM_AUDIT] &#xA;SET ExecStopDT = SYSDATETIME() &#xA;, ExtractRowCnt = @RowCount &#xA;,TableFinalRowCnt = @RowCount &#xA;,SuccessfulProcessingInd='Y' &#xA;WHERE AuditKey = @AuditKey;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+          <SQLTask:ParameterBinding
+            SQLTask:ParameterName="RowCount"
+            SQLTask:DtsVariableName="User::RowCount"
+            SQLTask:ParameterDirection="Input"
+            SQLTask:DataType="11"
+            SQLTask:ParameterSize="-1" />
+          <SQLTask:ParameterBinding
+            SQLTask:ParameterName="AuditKey"
+            SQLTask:DtsVariableName="User::AuditKey"
+            SQLTask:ParameterDirection="Input"
+            SQLTask:DataType="11"
+            SQLTask:ParameterSize="-1" />
+        </SQLTask:SqlTaskData>
+      </DTS:ObjectData>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:PrecedenceConstraints>
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Restricción]"
+      DTS:CreationName=""
+      DTS:DTSID="{26C3DD4A-518B-46EA-BABE-6CBB641D8232}"
+      DTS:From="Package\Task Prior RowCnt"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Restricción"
+      DTS:To="Package\Task Get AuditKey" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Restricción 1]"
+      DTS:CreationName=""
+      DTS:DTSID="{408F07EC-ED71-42B8-A572-7F3440F0454B}"
+      DTS:From="Package\Task Post RowCnt"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Restricción 1"
+      DTS:To="Package\Update AuditDim" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Restricción 2]"
+      DTS:CreationName=""
+      DTS:DTSID="{20CED02C-C37C-4366-AD5C-B5A4B751EEE2}"
+      DTS:From="Package\Task Get AuditKey"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Restricción 2"
+      DTS:To="Package\Execute procedure" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Restricción 4]"
+      DTS:CreationName=""
+      DTS:DTSID="{CB592C17-5976-4FD3-B143-AB3A51636F56}"
+      DTS:From="Package\Execute procedure"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Restricción 4"
+      DTS:To="Package\Task Post RowCnt" />
+  </DTS:PrecedenceConstraints>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--Esta sección CDATA contiene la información de diseño del paquete. Esta sección incluye información como, por ejemplo, las coordenadas (x,y), el ancho y el alto.-->
+<!--Si edita manualmente esta sección y comete un error, puede eliminarlo. -->
+<!--El paquete podrá cargarse normalmente, pero se perderá la información de diseño anterior y el diseñador reorganizará los elementos automáticamente en la superficie de diseño.-->
+<Objects
+  Version="8">
+  <!--Cada uno de los nodos siguientes contiene propiedades que no afectan al comportamiento en tiempo de ejecución.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        <NodeLayout
+          Size="167,42"
+          Id="Package\Execute procedure"
+          TopLeft="379.5,215.5" />
+        <NodeLayout
+          Size="165,42"
+          Id="Package\Task Get AuditKey"
+          TopLeft="302.5,135.5" />
+        <NodeLayout
+          Size="164,42"
+          Id="Package\Task Post RowCnt"
+          TopLeft="440,304.5" />
+        <NodeLayout
+          Size="166,42"
+          Id="Package\Task Prior RowCnt"
+          TopLeft="230,47.5" />
+        <NodeLayout
+          Size="159,42"
+          Id="Package\Update AuditDim"
+          TopLeft="501.5,400.5" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Restricción]"
+          TopLeft="313,89.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="72,46"
+              Start="0,0"
+              End="72,38.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,19" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,19"
+                    Point2="0,23"
+                    Point3="4,23" />
+                  <mssgle:LineSegment
+                    End="68,23" />
+                  <mssgle:CubicBezierSegment
+                    Point1="68,23"
+                    Point2="72,23"
+                    Point3="72,27" />
+                  <mssgle:LineSegment
+                    End="72,38.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Restricción 1]"
+          TopLeft="522,346.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="59,54"
+              Start="0,0"
+              End="59,46.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,23" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,23"
+                    Point2="0,27"
+                    Point3="4,27" />
+                  <mssgle:LineSegment
+                    End="55,27" />
+                  <mssgle:CubicBezierSegment
+                    Point1="55,27"
+                    Point2="59,27"
+                    Point3="59,31" />
+                  <mssgle:LineSegment
+                    End="59,46.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Restricción 2]"
+          TopLeft="385,177.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="78,38"
+              Start="0,0"
+              End="78,30.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,15" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,15"
+                    Point2="0,19"
+                    Point3="4,19" />
+                  <mssgle:LineSegment
+                    End="74,19" />
+                  <mssgle:CubicBezierSegment
+                    Point1="74,19"
+                    Point2="78,19"
+                    Point3="78,23" />
+                  <mssgle:LineSegment
+                    End="78,30.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Restricción 4]"
+          TopLeft="463,257.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="59,47"
+              Start="0,0"
+              End="59,39.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,19.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,19.5"
+                    Point2="0,23.5"
+                    Point3="4,23.5" />
+                  <mssgle:LineSegment
+                    End="55,23.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="55,23.5"
+                    Point2="59,23.5"
+                    Point3="59,27.5" />
+                  <mssgle:LineSegment
+                    End="59,39.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>

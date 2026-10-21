@@ -1,0 +1,10 @@
+﻿<?xml version="1.0"?>
+<DTS:ConnectionManager xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:ObjectName="AdoNet STAGE_HM"
+  DTS:DTSID="{CCD937BE-173A-47DD-A8C1-2EFAEA2F7E9A}"
+  DTS:CreationName="ADO.NET:System.Data.SqlClient.SqlConnection, System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <DTS:ObjectData>
+    <DTS:ConnectionManager
+      DTS:ConnectionString="Data Source=.;Initial Catalog=STAGE_HM;Integrated Security=True;Encrypt=False;TrustServerCertificate=True;Application Name=SSIS-{CCD937BE-173A-47DD-A8C1-2EFAEA2F7E9A}AdoNet STAGE_HM;" />
+  </DTS:ObjectData>
+</DTS:ConnectionManager>
