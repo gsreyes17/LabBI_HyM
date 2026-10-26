@@ -40,7 +40,7 @@
         <SSIS:ConnectionManagers>
           <SSIS:ConnectionManager SSIS:Name="AdoNet.DWH_HM.conmgr"/>
           <SSIS:ConnectionManager SSIS:Name="OleDB.DWH_HM.conmgr"/>
-        </SSIS:ConnectionManagers>
+        <SSIS:ConnectionManager SSIS:Name="OleDB.STAGE_HM.conmgr"/></SSIS:ConnectionManagers>
         <SSIS:DeploymentInfo>
           <SSIS:ProjectConnectionParameters>
             <SSIS:Parameter SSIS:Name="CM.AdoNet DWH_HM.ConnectByProxy">

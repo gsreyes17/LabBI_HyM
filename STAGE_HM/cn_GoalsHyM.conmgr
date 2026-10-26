@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<DTS:ConnectionManager xmlns:DTS="www.microsoft.com/SqlServer/Dts" DTS:CreationName="FLATFILE" DTS:DTSID="{0A96A186-82E0-4CEB-A36B-B2987DAB2987}" DTS:ObjectName="cn_GoalsHyM">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager DTS:Format="Delimited" DTS:LocaleID="10250" DTS:HeaderRowDelimiter="_x000D__x000A_" DTS:ColumnNamesInFirstDataRow="True" DTS:RowDelimiter="" DTS:TextQualifier="_x0022_" DTS:CodePage="65001" DTS:ConnectionString="E:\Business Intelligence\Data_HyM\GoalsHyM.csv">
+          <DTS:FlatFileColumns>
+            <DTS:FlatFileColumn DTS:ColumnType="Delimited" DTS:ColumnDelimiter="_x003B_" DTS:MaximumWidth="500" DTS:DataType="130" DTS:TextQualified="True" DTS:ObjectName="Escenario" DTS:DTSID="{328D0F4E-080B-475B-BA62-8071E23B6606}" DTS:CreationName=""/>
+            <DTS:FlatFileColumn DTS:ColumnType="Delimited" DTS:ColumnDelimiter="_x003B_" DTS:MaximumWidth="500" DTS:DataType="130" DTS:TextQualified="True" DTS:ObjectName="Monto" DTS:DTSID="{7BBDE38F-15B3-4E26-BD3C-14C29A5055AC}" DTS:CreationName=""/>
+            <DTS:FlatFileColumn DTS:ColumnType="Delimited" DTS:ColumnDelimiter="_x003B_" DTS:MaximumWidth="500" DTS:DataType="130" DTS:TextQualified="True" DTS:ObjectName="department_name" DTS:DTSID="{8B69421B-EADB-4D8F-832E-1D86D3EAE7A7}" DTS:CreationName=""/>
+            <DTS:FlatFileColumn DTS:ColumnType="Delimited" DTS:ColumnDelimiter="_x003B_" DTS:MaximumWidth="500" DTS:DataType="130" DTS:TextQualified="True" DTS:ObjectName="section_name" DTS:DTSID="{A3F29543-2CA5-446B-A9B9-761DDF63E864}" DTS:CreationName=""/>
+            <DTS:FlatFileColumn DTS:ColumnType="Delimited" DTS:ColumnDelimiter="_x003B_" DTS:MaximumWidth="500" DTS:DataType="130" DTS:TextQualified="True" DTS:ObjectName="TemporadaID" DTS:DTSID="{A771A241-A536-4AFE-82F3-902CB7431846}" DTS:CreationName=""/>
+            <DTS:FlatFileColumn DTS:ColumnType="Delimited" DTS:ColumnDelimiter="_x000D__x000A_" DTS:MaximumWidth="500" DTS:DataType="130" DTS:TextQualified="True" DTS:ObjectName="AÑO MES " DTS:DTSID="{B9BD9AC3-B767-4FF5-B2FC-04A1412E74D0}" DTS:CreationName=""/>
+          </DTS:FlatFileColumns>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>

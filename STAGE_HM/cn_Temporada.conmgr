@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<DTS:ConnectionManager xmlns:DTS="www.microsoft.com/SqlServer/Dts" DTS:CreationName="FLATFILE" DTS:DTSID="{025F7E07-1A25-4826-ACEF-ECBB7CECE61A}" DTS:ObjectName="cn_Temporada">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager DTS:Format="Delimited" DTS:LocaleID="10250" DTS:HeaderRowDelimiter="_x000D__x000A_" DTS:ColumnNamesInFirstDataRow="True" DTS:RowDelimiter="" DTS:TextQualifier="_x0022_" DTS:CodePage="65001" DTS:ConnectionString="E:\Business Intelligence\Data_HyM\Temporada.csv">
+          <DTS:FlatFileColumns>
+            <DTS:FlatFileColumn DTS:ColumnType="Delimited" DTS:ColumnDelimiter="_x002C_" DTS:MaximumWidth="500" DTS:DataType="130" DTS:TextQualified="True" DTS:ObjectName="TemporadaID" DTS:DTSID="{AFCEC93A-64F7-434E-BACF-D46940DA546A}" DTS:CreationName=""/>
+            <DTS:FlatFileColumn DTS:ColumnType="Delimited" DTS:ColumnDelimiter="_x002C_" DTS:MaximumWidth="500" DTS:DataType="130" DTS:TextQualified="True" DTS:ObjectName="Temporada" DTS:DTSID="{A1AE3F41-292F-469E-84B0-52B4F048D575}" DTS:CreationName=""/>
+            <DTS:FlatFileColumn DTS:ColumnType="Delimited" DTS:ColumnDelimiter="_x002C_" DTS:MaximumWidth="500" DTS:DataType="130" DTS:TextQualified="True" DTS:ObjectName="FechaInicio" DTS:DTSID="{E1B95074-E2BD-4514-8B9E-5448746D23D0}" DTS:CreationName=""/>
+            <DTS:FlatFileColumn DTS:ColumnType="Delimited" DTS:ColumnDelimiter="_x000D__x000A_" DTS:MaximumWidth="500" DTS:DataType="130" DTS:TextQualified="True" DTS:ObjectName="FechaFin " DTS:DTSID="{BE5472EF-8BCC-4952-95FC-B5827A3A8A95}" DTS:CreationName=""/>
+          </DTS:FlatFileColumns>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>

@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<DTS:ConnectionManager xmlns:DTS="www.microsoft.com/SqlServer/Dts" DTS:CreationName="FLATFILE" DTS:DTSID="{FEA3BCB3-9A17-4C68-AF47-34C2B16A0150}" DTS:ObjectName="cn_Customers">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager DTS:Format="Delimited" DTS:LocaleID="10250" DTS:HeaderRowDelimiter="_x000A_" DTS:ColumnNamesInFirstDataRow="True" DTS:RowDelimiter="" DTS:TextQualifier="_x0022_" DTS:CodePage="65001" DTS:ConnectionString="E:\Business Intelligence\Data_HyM\customers.csv">
+          <DTS:FlatFileColumns>
+            <DTS:FlatFileColumn DTS:ColumnType="Delimited" DTS:ColumnDelimiter="_x002C_" DTS:MaximumWidth="500" DTS:DataType="130" DTS:TextQualified="True" DTS:ObjectName="customer_id" DTS:DTSID="{7EBDBDB3-4285-4794-B933-6360012ABE56}" DTS:CreationName=""/>
+            <DTS:FlatFileColumn DTS:ColumnType="Delimited" DTS:ColumnDelimiter="_x002C_" DTS:MaximumWidth="500" DTS:DataType="130" DTS:TextQualified="True" DTS:ObjectName="FN" DTS:DTSID="{2338FCF6-FD1E-46A5-A0C7-71791F0CCE4B}" DTS:CreationName=""/>
+            <DTS:FlatFileColumn DTS:ColumnType="Delimited" DTS:ColumnDelimiter="_x002C_" DTS:MaximumWidth="500" DTS:DataType="130" DTS:TextQualified="True" DTS:ObjectName="Active" DTS:DTSID="{4D54D4B5-016D-48D4-9CB8-C8F6BDDB9838}" DTS:CreationName=""/>
+            <DTS:FlatFileColumn DTS:ColumnType="Delimited" DTS:ColumnDelimiter="_x002C_" DTS:MaximumWidth="500" DTS:DataType="130" DTS:TextQualified="True" DTS:ObjectName="club_member_status" DTS:DTSID="{3EE76D00-A8A9-4B57-A24F-0E3775377F6E}" DTS:CreationName=""/>
+            <DTS:FlatFileColumn DTS:ColumnType="Delimited" DTS:ColumnDelimiter="_x002C_" DTS:MaximumWidth="500" DTS:DataType="130" DTS:TextQualified="True" DTS:ObjectName="fashion_news_frequency" DTS:DTSID="{7B14B563-9E58-4332-B1BB-CAEA99725AD0}" DTS:CreationName=""/>
+            <DTS:FlatFileColumn DTS:ColumnType="Delimited" DTS:ColumnDelimiter="_x002C_" DTS:MaximumWidth="500" DTS:DataType="130" DTS:TextQualified="True" DTS:ObjectName="age" DTS:DTSID="{3B8D4E71-EA19-40D1-A69A-80BEE0CD1BDB}" DTS:CreationName=""/>
+            <DTS:FlatFileColumn DTS:ColumnType="Delimited" DTS:ColumnDelimiter="_x000A_" DTS:MaximumWidth="500" DTS:DataType="130" DTS:TextQualified="True" DTS:ObjectName="postal_code" DTS:DTSID="{57933112-74D4-438B-9E91-4414367A8591}" DTS:CreationName=""/>
+          </DTS:FlatFileColumns>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>

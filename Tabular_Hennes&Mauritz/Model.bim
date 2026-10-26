@@ -6,11 +6,11 @@
     "dataSources": [
       {
         "type": "structured",
-        "name": "SQL/PC;DWH_HM",
+        "name": "SQL/ ;DWH_HM",
         "connectionDetails": {
           "protocol": "tds",
           "address": {
-            "server": "PC",
+            "server": ".",
             "database": "DWH_HM"
           },
           "authentication": null,
@@ -18,15 +18,13 @@
         },
         "credential": {
           "AuthenticationKind": "ServiceAccount",
-          "kind": "SQL",
-          "path": "pc;DWH_HM",
           "EncryptConnection": false
         }
       }
     ],
     "tables": [
       {
-        "name": "vw_DimCategory",
+        "name": "Sales vw_DimCategory",
         "columns": [
           {
             "name": "CategoryID",
@@ -52,24 +50,6 @@
             "name": "TemporadaID",
             "dataType": "int64",
             "sourceColumn": "TemporadaID"
-          },
-          {
-            "type": "calculated",
-            "name": "Nombre Temporada",
-            "dataType": "string",
-            "expression": "VAR T = LOWER(TRIM('vw_DimCategory'[Temporada]))\nRETURN SWITCH(TRUE(), CONTAINSSTRING(T,\"verano\"),\"Verano\", CONTAINSSTRING(T,\"otoño\"),\"Otoño\", CONTAINSSTRING(T,\"invierno\"),\"Invierno\", CONTAINSSTRING(T,\"primavera\"),\"Primavera\",\"Sin temporada\")",
-            "sortByColumn": "Orden Temporada",
-            "summarizeBy": "none",
-            "isHidden": false,
-            "description": "Estación sin sufijo de año. Conserva la asignación de temporada original; usar junto con el año del calendario."
-          },
-          {
-            "type": "calculated",
-            "name": "Orden Temporada",
-            "dataType": "int64",
-            "expression": "VAR T = LOWER(TRIM('vw_DimCategory'[Temporada])) RETURN SWITCH(TRUE(),CONTAINSSTRING(T,\"verano\"),1,CONTAINSSTRING(T,\"otoño\"),2,CONTAINSSTRING(T,\"invierno\"),3,CONTAINSSTRING(T,\"primavera\"),4,5)",
-            "summarizeBy": "none",
-            "isHidden": false
           }
         ],
         "partitions": [
@@ -80,7 +60,7 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = #\"SQL/PC;DWH_HM\",",
+                "    Source = #\"SQL/ ;DWH_HM\",",
                 "    Sales_vw_DimCategory = Source{[Schema=\"Sales\",Item=\"vw_DimCategory\"]}[Data]",
                 "in",
                 "    Sales_vw_DimCategory"
@@ -90,7 +70,7 @@
         ]
       },
       {
-        "name": "vw_DimMonth",
+        "name": "Sales vw_DimMonth",
         "columns": [
           {
             "name": "FechaKey",
@@ -105,8 +85,7 @@
           {
             "name": "Nombre_Mes",
             "dataType": "string",
-            "sourceColumn": "Nombre_Mes",
-            "sortByColumn": "Mes_Anio"
+            "sourceColumn": "Nombre_Mes"
           },
           {
             "name": "Mes_Anio",
@@ -117,14 +96,6 @@
             "name": "Anio",
             "dataType": "int64",
             "sourceColumn": "Anio"
-          },
-          {
-            "type": "calculated",
-            "name": "Periodo Mes",
-            "dataType": "string",
-            "description": "Año y mes para mostrar todo el historial sin mezclar meses de distintos años.",
-            "expression": "FORMAT('vw_DimMonth'[Fecha], \"yyyy-MM\")",
-            "summarizeBy": "none"
           }
         ],
         "partitions": [
@@ -135,7 +106,7 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = #\"SQL/PC;DWH_HM\",",
+                "    Source = #\"SQL/ ;DWH_HM\",",
                 "    Sales_vw_DimMonth = Source{[Schema=\"Sales\",Item=\"vw_DimMonth\"]}[Data]",
                 "in",
                 "    Sales_vw_DimMonth"
@@ -145,7 +116,7 @@
         ]
       },
       {
-        "name": "vw_FactSalesGoals",
+        "name": "Sales vw_FactSalesGoals",
         "columns": [
           {
             "name": "CategoryID",
@@ -176,179 +147,17 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = #\"SQL/PC;DWH_HM\",",
+                "    Source = #\"SQL/ ;DWH_HM\",",
                 "    Sales_vw_FactSalesGoals = Source{[Schema=\"Sales\",Item=\"vw_FactSalesGoals\"]}[Data]",
                 "in",
                 "    Sales_vw_FactSalesGoals"
               ]
             }
           }
-        ],
-        "measures": [
-          {
-            "name": ".Sum_SubTotal_SalesGoals",
-            "expression": " SUM(vw_FactSalesGoals[SubTotal])",
-            "displayFolder": "Historicas",
-            "isHidden": false
-          },
-          {
-            "name": ".Sum_SubTotal_Real",
-            "expression": " SUM(vw_FactSalesMonthCategory[SubTotal])",
-            "displayFolder": "Historicas",
-            "isHidden": false
-          },
-          {
-            "name": ".SubTotal_SalesGoals_Year",
-            "expression": " TOTALYTD([.Sum_SubTotal_SalesGoals], vw_DimMonth[Fecha])",
-            "displayFolder": "Historicas",
-            "isHidden": false
-          },
-          {
-            "name": ".SubTotal_SalesGoals_Yea-1r",
-            "expression": " TOTALYTD([.Sum_SubTotal_SalesGoals], PREVIOUSYEAR(vw_DimMonth[Fecha]))",
-            "displayFolder": "Historicas",
-            "isHidden": false
-          },
-          {
-            "name": ".%var_SalesGoals",
-            "expression": " DIVIDE([.SubTotal_SalesGoals_Year] - [.SubTotal_SalesGoals_Yea-1r], [.SubTotal_SalesGoals_Yea-1r], 0)",
-            "displayFolder": "Historicas",
-            "isHidden": false
-          },
-          {
-            "name": ".%Cumplimiento_Meta_Historica",
-            "expression": " DIVIDE([.Sum_SubTotal_Real], [.Sum_SubTotal_SalesGoals], 0)",
-            "displayFolder": "Historicas",
-            "isHidden": false
-          },
-          {
-            "name": ".%Pareto_Categoria",
-            "expression": [
-              " ",
-              "VAR A = [.Sum_SubTotal_SalesGoals]",
-              "VAR B = ",
-              "    CALCULATE(",
-              "        [.Sum_SubTotal_SalesGoals],",
-              "        ALLSELECTED(vw_DimCategory[DepartmentName])",
-              "    )",
-              "VAR TOTAL = ",
-              "    DIVIDE(",
-              "        SUMX(",
-              "            FILTER(",
-              "                SUMMARIZE(",
-              "                    ALLSELECTED(vw_DimCategory[DepartmentName]),",
-              "                    vw_DimCategory[DepartmentName],",
-              "                    \"PORC\", [.Sum_SubTotal_SalesGoals]",
-              "                ),",
-              "                [PORC] >= A",
-              "            ),",
-              "            [PORC]",
-              "        ),",
-              "        B",
-              "    )",
-              "RETURN",
-              "    TOTAL"
-            ],
-            "displayFolder": "Historicas",
-            "isHidden": false
-          },
-          {
-            "name": ".Ventas_Mensuales",
-            "description": "Usar filtros de vw_DimMonth y vw_DimCategory. Escenario unico para metas. Sin moneda identificada; formato de importe con cuatro decimales.",
-            "expression": "SUM(vw_FactSalesMonthCategory[SubTotal])",
-            "formatString": "#,0.0000",
-            "displayFolder": "01 Desempeno mensual",
-            "isHidden": false
-          },
-          {
-            "name": ".Meta_Seleccionada",
-            "description": "Usar filtros de vw_DimMonth y vw_DimCategory. Escenario unico para metas. Sin moneda identificada; formato de importe con cuatro decimales.",
-            "expression": "IF(HASONEVALUE(vw_FactSalesGoals[Escenario]), SUM(vw_FactSalesGoals[SubTotal]), BLANK())",
-            "formatString": "#,0.0000",
-            "displayFolder": "01 Desempeno mensual",
-            "isHidden": false
-          },
-          {
-            "name": ".%Cumplimiento_Meta",
-            "description": "Usar filtros de vw_DimMonth y vw_DimCategory. Escenario unico para metas. ",
-            "expression": "IF([.Meta_Seleccionada] > 0, DIVIDE([.Ventas_Mensuales], [.Meta_Seleccionada]), BLANK())",
-            "formatString": "0.00%",
-            "displayFolder": "01 Desempeno mensual",
-            "isHidden": false
-          },
-          {
-            "name": ".Brecha_Meta",
-            "description": "Usar filtros de vw_DimMonth y vw_DimCategory. Escenario unico para metas. Sin moneda identificada; formato de importe con cuatro decimales.",
-            "expression": "IF([.Meta_Seleccionada] > 0, COALESCE([.Ventas_Mensuales], 0) - [.Meta_Seleccionada], BLANK())",
-            "formatString": "#,0.0000",
-            "displayFolder": "01 Desempeno mensual",
-            "isHidden": false
-          },
-          {
-            "name": ".Deficit_Meta",
-            "description": "Usar filtros de vw_DimMonth y vw_DimCategory. Escenario unico para metas. Sin moneda identificada; formato de importe con cuatro decimales.",
-            "expression": "IF([.Meta_Seleccionada] > 0, MAX(0, [.Meta_Seleccionada] - COALESCE([.Ventas_Mensuales], 0)), BLANK())",
-            "formatString": "#,0.0000",
-            "displayFolder": "01 Desempeno mensual",
-            "isHidden": false
-          },
-          {
-            "name": ".Estado_Meta",
-            "description": "Usar filtros de vw_DimMonth y vw_DimCategory. Escenario unico para metas. ",
-            "expression": "IF(NOT HASONEVALUE(vw_FactSalesGoals[Escenario]), \"Seleccione un escenario\", IF(NOT([.Meta_Seleccionada] > 0), \"N/D\", IF([.%Cumplimiento_Meta] >= 1, \"Cumple\", \"Bajo meta\")))",
-            "displayFolder": "01 Desempeno mensual",
-            "isHidden": false
-          },
-          {
-            "name": ".Ventas_Mensuales_Anteriores_Comparables",
-            "description": "Variación interanual flexible: último año seleccionado frente a los mismos meses del año anterior. Incluye meses parciales y no exige cobertura completa. La etiqueta identifica coberturas parciales; solo la ausencia o cero de la base impide obtener una razón.",
-            "expression": "VAR AnioFoco = MAXX(ALLSELECTED(vw_DimMonth),vw_DimMonth[Anio])\nVAR MesesActuales = FILTER(VALUES(vw_DimMonth[Fecha]),YEAR(vw_DimMonth[Fecha])=AnioFoco)\nVAR MesesAnteriores = SELECTCOLUMNS(MesesActuales,\"Fecha\",EDATE(vw_DimMonth[Fecha],-12))\nRETURN CALCULATE([.Ventas_Mensuales],REMOVEFILTERS(vw_DimMonth),TREATAS(MesesAnteriores,vw_DimMonth[Fecha]))",
-            "formatString": "#,0.0000",
-            "displayFolder": "02 Comparacion temporal",
-            "isHidden": false
-          },
-          {
-            "name": ".Cambio_Ventas_Mensuales_Comparable",
-            "description": "Variación interanual flexible: último año seleccionado frente a los mismos meses del año anterior. Incluye meses parciales y no exige cobertura completa. La etiqueta identifica coberturas parciales; solo la ausencia o cero de la base impide obtener una razón.",
-            "expression": "VAR Actual = [.Ventas_Mensuales_Actuales_Comparables]\nVAR Anterior = [.Ventas_Mensuales_Anteriores_Comparables]\nRETURN IF(NOT ISBLANK(Anterior),Actual-Anterior)",
-            "formatString": "#,0.0000",
-            "displayFolder": "02 Comparacion temporal",
-            "isHidden": false
-          },
-          {
-            "name": ".%Variacion_Ventas_Mensuales_Comparable",
-            "description": "Variación interanual flexible: último año seleccionado frente a los mismos meses del año anterior. Incluye meses parciales y no exige cobertura completa. La etiqueta identifica coberturas parciales; solo la ausencia o cero de la base impide obtener una razón.",
-            "expression": "DIVIDE([.Cambio_Ventas_Mensuales_Comparable],[.Ventas_Mensuales_Anteriores_Comparables])",
-            "formatString": "0.00%",
-            "displayFolder": "02 Comparacion temporal",
-            "isHidden": false
-          },
-          {
-            "name": ".Ventas_Mensuales_Actuales_Comparables",
-            "isHidden": false,
-            "displayFolder": "02 Comparacion temporal",
-            "expression": "VAR AnioFoco = MAXX(ALLSELECTED(vw_DimMonth),vw_DimMonth[Anio])\nVAR MesesActuales = FILTER(VALUES(vw_DimMonth[Fecha]),YEAR(vw_DimMonth[Fecha])=AnioFoco)\nRETURN CALCULATE([.Ventas_Mensuales],REMOVEFILTERS(vw_DimMonth),TREATAS(MesesActuales,vw_DimMonth[Fecha]))",
-            "description": "Variación interanual flexible: último año seleccionado frente a los mismos meses del año anterior. Incluye meses parciales y no exige cobertura completa. La etiqueta identifica coberturas parciales; solo la ausencia o cero de la base impide obtener una razón.",
-            "formatString": "#,0.0000"
-          },
-          {
-            "name": ".Lectura_Cambio_Interanual_Comparable",
-            "isHidden": false,
-            "displayFolder": "02 Comparacion temporal",
-            "expression": "VAR Cambio = [.%Variacion_Ventas_Mensuales_Comparable]\nVAR Anterior = [.Ventas_Mensuales_Anteriores_Comparables]\nRETURN IF(NOT ISBLANK(Cambio),FORMAT(Cambio,\"+0.00%;-0.00%;0.00%\"),IF(ISBLANK(Anterior),\"Sin datos del año anterior\",\"Base anterior igual a cero\"))",
-            "description": "Variación interanual flexible: último año seleccionado frente a los mismos meses del año anterior. Incluye meses parciales y no exige cobertura completa. La etiqueta identifica coberturas parciales; solo la ausencia o cero de la base impide obtener una razón."
-          },
-          {
-            "name": ".Periodo_Comparacion_Interanual",
-            "isHidden": false,
-            "displayFolder": "02 Comparacion temporal",
-            "expression": "VAR AnioFoco = MAXX(ALLSELECTED(vw_DimMonth),vw_DimMonth[Anio])\nVAR MesesActuales = FILTER(VALUES(vw_DimMonth[Fecha]),YEAR(vw_DimMonth[Fecha])=AnioFoco)\nVAR Cantidad = COUNTROWS(MesesActuales)\nVAR Desde = MINX(MesesActuales,vw_DimMonth[Fecha])\nVAR Hasta = MAXX(MesesActuales,vw_DimMonth[Fecha])\nVAR MesesTexto = IF(Cantidad=1,FORMAT(Desde,\"mmm\",\"en-US\"),IF(Cantidad=DATEDIFF(Desde,Hasta,MONTH)+1,FORMAT(Desde,\"mmm\",\"en-US\")&\"–\"&FORMAT(Hasta,\"mmm\",\"en-US\"),CONCATENATEX(MesesActuales,FORMAT(vw_DimMonth[Fecha],\"mmm\",\"en-US\"),\", \",vw_DimMonth[Fecha],ASC)))\nVAR MinKey = CALCULATE(MIN(FactSales[FechaKey]),REMOVEFILTERS(),FactSales[FechaKey]>0)\nVAR MaxKey = CALCULATE(MAX(FactSales[FechaKey]),REMOVEFILTERS(),FactSales[FechaKey]>0)\nVAR FechaMin = DATE(INT(MinKey/10000),INT(MOD(MinKey,10000)/100),MOD(MinKey,100))\nVAR FechaMax = DATE(INT(MaxKey/10000),INT(MOD(MaxKey,10000)/100),MOD(MaxKey,100))\nVAR Parcial = Desde<FechaMin || EOMONTH(Hasta,0)>FechaMax || EDATE(Desde,-12)<FechaMin || EOMONTH(EDATE(Hasta,-12),0)>FechaMax\nRETURN IF(Cantidad>0,FORMAT(AnioFoco,\"0\")&\" vs \"&FORMAT(AnioFoco-1,\"0\")&\" · \"&MesesTexto&IF(Parcial,\" · cobertura parcial\",\"\"),\"Sin periodo seleccionado\")",
-            "description": "Variación interanual flexible: último año seleccionado frente a los mismos meses del año anterior. Incluye meses parciales y no exige cobertura completa. La etiqueta identifica coberturas parciales; solo la ausencia o cero de la base impide obtener una razón."
-          }
         ]
       },
       {
-        "name": "vw_FactSalesMonthCategory",
+        "name": "Sales vw_FactSalesMonthCategory",
         "columns": [
           {
             "name": "CategoryID",
@@ -374,7 +183,7 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = #\"SQL/PC;DWH_HM\",",
+                "    Source = #\"SQL/ ;DWH_HM\",",
                 "    Sales_vw_FactSalesMonthCategory = Source{[Schema=\"Sales\",Item=\"vw_FactSalesMonthCategory\"]}[Data]",
                 "in",
                 "    Sales_vw_FactSalesMonthCategory"
@@ -384,13 +193,8 @@
         ]
       },
       {
-        "name": "FactSales",
+        "name": "Sales FactSales",
         "columns": [
-          {
-            "name": "SaleID",
-            "dataType": "int64",
-            "sourceColumn": "SaleID"
-          },
           {
             "name": "FechaKey",
             "dataType": "int64",
@@ -430,403 +234,17 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = #\"SQL/PC;DWH_HM\",",
+                "    Source = #\"SQL/ ;DWH_HM\",",
                 "    Sales_FactSales = Source{[Schema=\"Sales\",Item=\"FactSales\"]}[Data]",
                 "in",
                 "    Sales_FactSales"
               ]
             }
           }
-        ],
-        "measures": [
-          {
-            "name": ".Importe_Ventas",
-            "description": "Usar dimensiones de detalle relacionadas con FactSales. Sin moneda identificada; formato de importe con cuatro decimales.",
-            "expression": "SUM(FactSales[Price])",
-            "formatString": "#,0.0000",
-            "displayFolder": "01 Ventas y composicion",
-            "isHidden": false
-          },
-          {
-            "name": ".Registros_Venta",
-            "description": "Usar dimensiones de detalle relacionadas con FactSales. ",
-            "expression": "COUNTROWS(FactSales)",
-            "formatString": "#,0",
-            "displayFolder": "01 Ventas y composicion",
-            "isHidden": false
-          },
-          {
-            "name": ".Clientes_Compradores",
-            "description": "Usar dimensiones de detalle relacionadas con FactSales. ",
-            "expression": "CALCULATE(DISTINCTCOUNT(FactSales[CustomerKey]), KEEPFILTERS(FactSales[CustomerKey] <> -1))",
-            "formatString": "#,0",
-            "displayFolder": "01 Ventas y composicion",
-            "isHidden": false
-          },
-          {
-            "name": ".Importe_por_Registro",
-            "description": "Usar dimensiones de detalle relacionadas con FactSales. Sin moneda identificada; formato de importe con cuatro decimales.",
-            "expression": "DIVIDE([.Importe_Ventas], [.Registros_Venta])",
-            "formatString": "#,0.0000",
-            "displayFolder": "01 Ventas y composicion",
-            "isHidden": false
-          },
-          {
-            "name": ".Importe_por_Cliente",
-            "description": "Usar dimensiones de detalle relacionadas con FactSales. Sin moneda identificada; formato de importe con cuatro decimales.",
-            "expression": "DIVIDE(CALCULATE([.Importe_Ventas], KEEPFILTERS(FactSales[CustomerKey] <> -1)), [.Clientes_Compradores])",
-            "formatString": "#,0.0000",
-            "displayFolder": "01 Ventas y composicion",
-            "isHidden": false
-          },
-          {
-            "name": ".%Participacion_Canal",
-            "description": "Usar dimensiones de detalle relacionadas con FactSales. ",
-            "expression": "DIVIDE([.Importe_Ventas], CALCULATE([.Importe_Ventas], ALLSELECTED(DimSalesChannel[SalesChannelName])))",
-            "formatString": "0.00%",
-            "displayFolder": "01 Ventas y composicion",
-            "isHidden": false
-          },
-          {
-            "name": ".%Participacion_Grupo",
-            "description": "Usar dimensiones de detalle relacionadas con FactSales. ",
-            "expression": "DIVIDE([.Importe_Ventas], CALCULATE([.Importe_Ventas], ALLSELECTED(DimArticle[ProductGroupName])))",
-            "formatString": "0.00%",
-            "displayFolder": "01 Ventas y composicion",
-            "isHidden": false
-          },
-          {
-            "name": ".Sum_SubTotal",
-            "expression": " SUM(FactSales[Price])",
-            "displayFolder": "Historicas",
-            "isHidden": false
-          },
-          {
-            "name": ".Avg_SubTotal",
-            "expression": " AVERAGE(FactSales[Price])",
-            "displayFolder": "Historicas",
-            "isHidden": false
-          },
-          {
-            "name": ".Total_Transacciones",
-            "expression": " COUNTROWS(FactSales)",
-            "displayFolder": "Historicas",
-            "isHidden": false
-          },
-          {
-            "name": ".Clientes_Unicos",
-            "expression": " DISTINCTCOUNT(FactSales[CustomerKey])",
-            "displayFolder": "Historicas",
-            "isHidden": false
-          },
-          {
-            "name": ".Titulo_Comparacion_anual",
-            "expression": [
-              " ",
-              "CONCATENATE(\"Comparación Anual  \" & [.Anio_Actual], \" - \" & [.Anio_Actual] - 1 & \" - \" & [.Anio_Actual] - 2 & \" - \" & [.Anio_Actual] - 3)"
-            ],
-            "displayFolder": "Historicas",
-            "isHidden": false
-          },
-          {
-            "name": ".Titulo_Varianza",
-            "expression": " CONCATENATE(\"Año \" & [.Anio_Actual], \" - \" & [.Anio_Actual] - 1)",
-            "displayFolder": "Historicas",
-            "isHidden": false
-          },
-          {
-            "name": ".Titulo_Varianza1",
-            "expression": " CONCATENATE(\"Año \" & [.Anio_Actual], \" - \" & [.Anio_Actual] - 2)",
-            "displayFolder": "Historicas",
-            "isHidden": false
-          },
-          {
-            "name": ".%Var_SubTotal_I",
-            "expression": [
-              " ",
-              "VAR si = IF([.%var_SubTotal] < 0, \"▼\", \"▲\")",
-              "RETURN CONCATENATE(ROUND([.%var_SubTotal], 4) * 100, \"%  \" & si)"
-            ],
-            "displayFolder": "Historicas",
-            "isHidden": false
-          },
-          {
-            "name": ".SubTotal_Ultimos_Dias_7",
-            "expression": [
-              " ",
-              "CALCULATE(",
-              "    [.Sum_SubTotal],",
-              "    DATESINPERIOD(DimFecha[Fecha], MAX(DimFecha[Fecha]) - 1, -7, DAY)",
-              ")"
-            ],
-            "displayFolder": "Historicas",
-            "isHidden": false
-          },
-          {
-            "name": ".SubTotal_Ultimos_Dias_7_avg",
-            "expression": [
-              " ",
-              "CALCULATE(",
-              "    [.Avg_SubTotal],",
-              "    DATESINPERIOD(DimFecha[Fecha], MAX(DimFecha[Fecha]) - 1, -7, DAY)",
-              ")"
-            ],
-            "displayFolder": "Historicas",
-            "isHidden": false
-          },
-          {
-            "name": ".%Pareto_ProductGroup",
-            "expression": [
-              " ",
-              "VAR A = [.Sum_SubTotal]",
-              "VAR B = CALCULATE([.Sum_SubTotal], ALLSELECTED(DimArticle[ProductGroupName]))",
-              "VAR TOTAL = ",
-              "    DIVIDE(",
-              "        SUMX(",
-              "            FILTER(",
-              "                SUMMARIZE(",
-              "                    ALLSELECTED(DimArticle[ProductGroupName]),",
-              "                    DimArticle[ProductGroupName],",
-              "                    \"PORC\", [.Sum_SubTotal]",
-              "                ),",
-              "                [PORC] >= A",
-              "            ),",
-              "            [PORC]",
-              "        ),",
-              "        B",
-              "    )",
-              "RETURN TOTAL"
-            ],
-            "displayFolder": "Historicas",
-            "isHidden": false
-          },
-          {
-            "name": ".Subtotal_Anio_Actual",
-            "expression": [
-              " ",
-              "VAR anio = [.Anio_Actual] ",
-              "RETURN CALCULATE([.Sum_SubTotal], DimFecha[Anio] = anio)"
-            ],
-            "displayFolder": "Historicas",
-            "isHidden": false
-          },
-          {
-            "name": ".Subtotal_Anio_prev-1l",
-            "expression": [
-              " ",
-              "VAR anio = [.Anio_Actual] - 1 ",
-              "RETURN CALCULATE([.Sum_SubTotal], DimFecha[Anio] = anio)"
-            ],
-            "displayFolder": "Historicas",
-            "isHidden": false
-          },
-          {
-            "name": ".Subtotal_Anio_prev-2l",
-            "expression": [
-              " ",
-              "VAR anio = [.Anio_Actual] - 2 ",
-              "RETURN CALCULATE([.Sum_SubTotal], DimFecha[Anio] = anio)"
-            ],
-            "displayFolder": "Historicas",
-            "isHidden": false
-          },
-          {
-            "name": ".Subtotal_Anio_prev-3l",
-            "expression": [
-              " ",
-              "VAR anio = [.Anio_Actual] - 3 ",
-              "RETURN CALCULATE([.Sum_SubTotal], DimFecha[Anio] = anio)"
-            ],
-            "displayFolder": "Historicas",
-            "isHidden": false
-          },
-          {
-            "name": ".%var_SubTotal",
-            "expression": " DIVIDE([.Subtotal_Anio_Actual] - [.Subtotal_Anio_prev-1l], [.Subtotal_Anio_prev-1l])",
-            "displayFolder": "Historicas",
-            "isHidden": false
-          },
-          {
-            "name": ".%var_SubTotal1",
-            "expression": " DIVIDE([.Subtotal_Anio_Actual] - [.Subtotal_Anio_prev-2l], [.Subtotal_Anio_prev-2l])",
-            "displayFolder": "Historicas",
-            "isHidden": false
-          },
-          {
-            "name": ".%var_SubTotal2",
-            "expression": " DIVIDE([.Subtotal_Anio_Actual] - [.Subtotal_Anio_prev-3l], [.Subtotal_Anio_prev-3l])",
-            "displayFolder": "Historicas",
-            "isHidden": false
-          },
-          {
-            "name": ".Acumulado_Anual",
-            "expression": " TOTALYTD([.Sum_SubTotal], DimFecha[Fecha])",
-            "displayFolder": "Historicas",
-            "isHidden": false
-          },
-          {
-            "name": ".Anio_Actual",
-            "expression": " MAX(DimFecha[Anio])",
-            "displayFolder": "Historicas",
-            "isHidden": false
-          },
-          {
-            "name": ".Importe_Anterior_Comparable",
-            "description": "Periodo y filtros seleccionados. Comparaciones sujetas a cobertura temporal; recurrencia requiere al menos dos fechas de compra distintas. Sin moneda acreditada: importes en UM.",
-            "expression": [
-              "VAR Inicio = MIN(DimFecha[Fecha])",
-              "        VAR Fin = MAX(DimFecha[Fecha])",
-              "        VAR InicioAnterior = EDATE(Inicio, -12)",
-              "        VAR FinAnterior = EDATE(Fin, -12)",
-              "        VAR InicioDisponible = CALCULATE(MIN(DimFecha[Fecha]), REMOVEFILTERS(DimFecha), DimFecha[FechaKey] <> -1)",
-              "        VAR FinDisponible = CALCULATE(MAX(DimFecha[Fecha]), REMOVEFILTERS(DimFecha), DimFecha[FechaKey] <> -1)",
-              "        VAR EsContinuo = COUNTROWS(VALUES(DimFecha[Fecha])) = DATEDIFF(Inicio, Fin, DAY) + 1",
-              "        RETURN",
-              "            IF(",
-              "                HASONEVALUE(DimFecha[Anio]) && EsContinuo",
-              "                    && InicioAnterior >= InicioDisponible && FinAnterior <= FinDisponible,",
-              "                CALCULATE(",
-              "                    [.Importe_Ventas],",
-              "                    REMOVEFILTERS(DimFecha),",
-              "                    DATESBETWEEN(DimFecha[Fecha], InicioAnterior, FinAnterior)",
-              "                )",
-              "            )"
-            ],
-            "formatString": "#,0.0000",
-            "displayFolder": "02 Comparacion temporal",
-            "isHidden": false
-          },
-          {
-            "name": ".%Variacion_Importe_Comparable",
-            "description": "Periodo y filtros seleccionados. Comparaciones sujetas a cobertura temporal; recurrencia requiere al menos dos fechas de compra distintas. Sin moneda acreditada: importes en UM.",
-            "expression": "DIVIDE([.Importe_Ventas] - [.Importe_Anterior_Comparable], [.Importe_Anterior_Comparable])",
-            "formatString": "0.00%",
-            "displayFolder": "02 Comparacion temporal",
-            "isHidden": false
-          },
-          {
-            "name": ".Registros_Anteriores_Comparables",
-            "description": "Periodo y filtros seleccionados. Comparaciones sujetas a cobertura temporal; recurrencia requiere al menos dos fechas de compra distintas. Sin moneda acreditada: importes en UM.",
-            "expression": [
-              "VAR Inicio = MIN(DimFecha[Fecha])",
-              "        VAR Fin = MAX(DimFecha[Fecha])",
-              "        VAR InicioAnterior = EDATE(Inicio, -12)",
-              "        VAR FinAnterior = EDATE(Fin, -12)",
-              "        VAR InicioDisponible = CALCULATE(MIN(DimFecha[Fecha]), REMOVEFILTERS(DimFecha), DimFecha[FechaKey] <> -1)",
-              "        VAR FinDisponible = CALCULATE(MAX(DimFecha[Fecha]), REMOVEFILTERS(DimFecha), DimFecha[FechaKey] <> -1)",
-              "        VAR EsContinuo = COUNTROWS(VALUES(DimFecha[Fecha])) = DATEDIFF(Inicio, Fin, DAY) + 1",
-              "        RETURN",
-              "            IF(",
-              "                HASONEVALUE(DimFecha[Anio]) && EsContinuo",
-              "                    && InicioAnterior >= InicioDisponible && FinAnterior <= FinDisponible,",
-              "                CALCULATE(",
-              "                    [.Registros_Venta],",
-              "                    REMOVEFILTERS(DimFecha),",
-              "                    DATESBETWEEN(DimFecha[Fecha], InicioAnterior, FinAnterior)",
-              "                )",
-              "            )"
-            ],
-            "formatString": "#,0",
-            "displayFolder": "02 Comparacion temporal",
-            "isHidden": false
-          },
-          {
-            "name": ".%Variacion_Registros_Comparable",
-            "description": "Periodo y filtros seleccionados. Comparaciones sujetas a cobertura temporal; recurrencia requiere al menos dos fechas de compra distintas. Sin moneda acreditada: importes en UM.",
-            "expression": "DIVIDE([.Registros_Venta] - [.Registros_Anteriores_Comparables], [.Registros_Anteriores_Comparables])",
-            "formatString": "0.00%",
-            "displayFolder": "02 Comparacion temporal",
-            "isHidden": false
-          },
-          {
-            "name": ".Articulos_Vendidos",
-            "description": "Periodo y filtros seleccionados. Comparaciones sujetas a cobertura temporal; recurrencia requiere al menos dos fechas de compra distintas. Sin moneda acreditada: importes en UM.",
-            "expression": [
-              "CALCULATE(",
-              "            DISTINCTCOUNT(FactSales[ArticleKey]),",
-              "            KEEPFILTERS(FactSales[ArticleKey] <> -1)",
-              "        )"
-            ],
-            "formatString": "#,0",
-            "displayFolder": "03 Productos",
-            "isHidden": false
-          },
-          {
-            "name": ".Dias_Cliente_Compra",
-            "description": "Periodo y filtros seleccionados. Comparaciones sujetas a cobertura temporal; recurrencia requiere al menos dos fechas de compra distintas. Sin moneda acreditada: importes en UM.",
-            "expression": [
-              "COUNTROWS(",
-              "            CALCULATETABLE(",
-              "                SUMMARIZE(FactSales, FactSales[CustomerKey], FactSales[FechaKey]),",
-              "                KEEPFILTERS(FactSales[CustomerKey] <> -1),",
-              "                KEEPFILTERS(FactSales[FechaKey] <> -1)",
-              "            )",
-              "        )"
-            ],
-            "formatString": "#,0",
-            "displayFolder": "02 Compradores y recurrencia",
-            "isHidden": false
-          },
-          {
-            "name": ".Dias_Compra_por_Comprador",
-            "description": "Periodo y filtros seleccionados. Comparaciones sujetas a cobertura temporal; recurrencia requiere al menos dos fechas de compra distintas. Sin moneda acreditada: importes en UM.",
-            "expression": "DIVIDE([.Dias_Cliente_Compra], [.Clientes_Compradores])",
-            "formatString": "#,0.00",
-            "displayFolder": "02 Compradores y recurrencia",
-            "isHidden": false
-          },
-          {
-            "name": ".Compradores_Recurrentes",
-            "description": "Periodo y filtros seleccionados. Comparaciones sujetas a cobertura temporal; recurrencia requiere al menos dos fechas de compra distintas. Sin moneda acreditada: importes en UM.",
-            "expression": [
-              "VAR ClientesConDias =",
-              "            CALCULATETABLE(",
-              "                SUMMARIZE(",
-              "                    FactSales,",
-              "                    FactSales[CustomerKey],",
-              "                    \"DiasCompra\", DISTINCTCOUNT(FactSales[FechaKey])",
-              "                ),",
-              "                KEEPFILTERS(FactSales[CustomerKey] <> -1),",
-              "                KEEPFILTERS(FactSales[FechaKey] <> -1)",
-              "            )",
-              "        RETURN COUNTROWS(FILTER(ClientesConDias, [DiasCompra] >= 2))"
-            ],
-            "formatString": "#,0",
-            "displayFolder": "02 Compradores y recurrencia",
-            "isHidden": false
-          },
-          {
-            "name": ".%Tasa_Recurrencia",
-            "description": "Periodo y filtros seleccionados. Comparaciones sujetas a cobertura temporal; recurrencia requiere al menos dos fechas de compra distintas. Sin moneda acreditada: importes en UM.",
-            "expression": "DIVIDE([.Compradores_Recurrentes], [.Clientes_Compradores])",
-            "formatString": "0.00%",
-            "displayFolder": "02 Compradores y recurrencia",
-            "isHidden": false
-          },
-          {
-            "name": ".%Participacion_Top_10_Articulos_Registros",
-            "description": "Periodo y filtros seleccionados. Comparaciones sujetas a cobertura temporal; recurrencia requiere al menos dos fechas de compra distintas. Sin moneda acreditada: importes en UM.",
-            "expression": [
-              "VAR PorArticulo =",
-              "            CALCULATETABLE(",
-              "                SUMMARIZE(",
-              "                    FactSales,",
-              "                    FactSales[ArticleKey],",
-              "                    \"RegistrosArticulo\", COUNTROWS(FactSales)",
-              "                ),",
-              "                KEEPFILTERS(FactSales[ArticleKey] <> -1)",
-              "            )",
-              "        VAR Principales = TOPN(10, PorArticulo, [RegistrosArticulo], DESC, FactSales[ArticleKey], ASC)",
-              "        RETURN DIVIDE(SUMX(Principales, [RegistrosArticulo]), SUMX(PorArticulo, [RegistrosArticulo]))"
-            ],
-            "formatString": "0.00%",
-            "displayFolder": "03 Productos",
-            "isHidden": false
-          }
         ]
       },
       {
-        "name": "DimFecha",
+        "name": "GENERICO DimFecha",
         "columns": [
           {
             "name": "FechaKey",
@@ -846,8 +264,7 @@
           {
             "name": "Nombre_Dia_Semana",
             "dataType": "string",
-            "sourceColumn": "Nombre_Dia_Semana",
-            "sortByColumn": "Dia_Semana"
+            "sourceColumn": "Nombre_Dia_Semana"
           },
           {
             "name": "Dia_Mes",
@@ -862,8 +279,7 @@
           {
             "name": "Nombre_Mes",
             "dataType": "string",
-            "sourceColumn": "Nombre_Mes",
-            "sortByColumn": "Mes_Anio"
+            "sourceColumn": "Nombre_Mes"
           },
           {
             "name": "Mes_Anio",
@@ -904,14 +320,6 @@
             "name": "Fin_Semana",
             "dataType": "int64",
             "sourceColumn": "Fin_Semana"
-          },
-          {
-            "type": "calculated",
-            "name": "Periodo Mes",
-            "dataType": "string",
-            "description": "Año y mes para mostrar todo el historial sin mezclar meses de distintos años.",
-            "expression": "FORMAT('DimFecha'[Fecha], \"yyyy-MM\")",
-            "summarizeBy": "none"
           }
         ],
         "partitions": [
@@ -922,7 +330,7 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = #\"SQL/PC;DWH_HM\",",
+                "    Source = #\"SQL/ ;DWH_HM\",",
                 "    GENERICO_DimFecha = Source{[Schema=\"GENERICO\",Item=\"DimFecha\"]}[Data]",
                 "in",
                 "    GENERICO_DimFecha"
@@ -932,7 +340,7 @@
         ]
       },
       {
-        "name": "DimArticle",
+        "name": "Sales DimArticle",
         "columns": [
           {
             "name": "ArticleKey",
@@ -1038,7 +446,7 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = #\"SQL/PC;DWH_HM\",",
+                "    Source = #\"SQL/ ;DWH_HM\",",
                 "    Sales_DimArticle = Source{[Schema=\"Sales\",Item=\"DimArticle\"]}[Data]",
                 "in",
                 "    Sales_DimArticle"
@@ -1048,7 +456,7 @@
         ]
       },
       {
-        "name": "DimCustomer",
+        "name": "Sales DimCustomer",
         "columns": [
           {
             "name": "CustomerKey",
@@ -1089,22 +497,6 @@
             "name": "PostalCode",
             "dataType": "string",
             "sourceColumn": "PostalCode"
-          },
-          {
-            "type": "calculated",
-            "name": "Tramo Edad",
-            "dataType": "string",
-            "description": "Edad registrada en el archivo; no representa edad historica a la fecha de cada compra.",
-            "expression": "VAR Edad = DimCustomer[Age] RETURN SWITCH(TRUE(), ISBLANK(Edad) || Edad < 0, \"Sin dato\", Edad < 20, \"Menores de 20\", Edad < 30, \"20-29\", Edad < 40, \"30-39\", Edad < 50, \"40-49\", Edad < 60, \"50-59\", \"60 o mas\")",
-            "sortByColumn": "Orden Tramo Edad",
-            "summarizeBy": "none"
-          },
-          {
-            "type": "calculated",
-            "name": "Orden Tramo Edad",
-            "dataType": "int64",
-            "expression": "VAR Edad = DimCustomer[Age] RETURN SWITCH(TRUE(), ISBLANK(Edad) || Edad < 0, 7, Edad < 20, 1, Edad < 30, 2, Edad < 40, 3, Edad < 50, 4, Edad < 60, 5, 6)",
-            "summarizeBy": "none"
           }
         ],
         "partitions": [
@@ -1115,7 +507,7 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = #\"SQL/PC;DWH_HM\",",
+                "    Source = #\"SQL/ ;DWH_HM\",",
                 "    Sales_DimCustomer = Source{[Schema=\"Sales\",Item=\"DimCustomer\"]}[Data]",
                 "in",
                 "    Sales_DimCustomer"
@@ -1125,7 +517,7 @@
         ]
       },
       {
-        "name": "DimSalesChannel",
+        "name": "Sales DimSalesChannel",
         "columns": [
           {
             "name": "SalesChannelKey",
@@ -1151,7 +543,7 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = #\"SQL/PC;DWH_HM\",",
+                "    Source = #\"SQL/ ;DWH_HM\",",
                 "    Sales_DimSalesChannel = Source{[Schema=\"Sales\",Item=\"DimSalesChannel\"]}[Data]",
                 "in",
                 "    Sales_DimSalesChannel"
@@ -1161,7 +553,7 @@
         ]
       },
       {
-        "name": "DimTemporada",
+        "name": "Sales DimTemporada",
         "columns": [
           {
             "name": "TemporadaKey",
@@ -1187,24 +579,6 @@
             "name": "FechaFin",
             "dataType": "dateTime",
             "sourceColumn": "FechaFin"
-          },
-          {
-            "type": "calculated",
-            "name": "Nombre Temporada",
-            "dataType": "string",
-            "expression": "VAR T = LOWER(TRIM('DimTemporada'[Temporada]))\nRETURN SWITCH(TRUE(), CONTAINSSTRING(T,\"verano\"),\"Verano\", CONTAINSSTRING(T,\"otoño\"),\"Otoño\", CONTAINSSTRING(T,\"invierno\"),\"Invierno\", CONTAINSSTRING(T,\"primavera\"),\"Primavera\",\"Sin temporada\")",
-            "sortByColumn": "Orden Temporada",
-            "summarizeBy": "none",
-            "isHidden": false,
-            "description": "Estación sin sufijo de año. Conserva la asignación de temporada original; usar junto con el año del calendario."
-          },
-          {
-            "type": "calculated",
-            "name": "Orden Temporada",
-            "dataType": "int64",
-            "expression": "VAR T = LOWER(TRIM('DimTemporada'[Temporada])) RETURN SWITCH(TRUE(),CONTAINSSTRING(T,\"verano\"),1,CONTAINSSTRING(T,\"otoño\"),2,CONTAINSSTRING(T,\"invierno\"),3,CONTAINSSTRING(T,\"primavera\"),4,5)",
-            "summarizeBy": "none",
-            "isHidden": false
           }
         ],
         "partitions": [
@@ -1215,7 +589,7 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = #\"SQL/PC;DWH_HM\",",
+                "    Source = #\"SQL/ ;DWH_HM\",",
                 "    Sales_DimTemporada = Source{[Schema=\"Sales\",Item=\"DimTemporada\"]}[Data]",
                 "in",
                 "    Sales_DimTemporada"
@@ -1227,73 +601,39 @@
     ],
     "relationships": [
       {
-        "name": "06cbd2fb-1fb9-4ef1-8c57-b278538d5253",
-        "fromTable": "FactSales",
+        "name": "c2390447-62f9-470a-81f6-3769e44d4dba",
+        "fromTable": "Sales FactSales",
         "fromColumn": "FechaKey",
-        "toTable": "DimFecha",
+        "toTable": "GENERICO DimFecha",
         "toColumn": "FechaKey"
       },
       {
-        "name": "3b4f1af4-221e-4c2a-9699-97833e533fe7",
-        "fromTable": "FactSales",
+        "name": "35d8ccb5-ae4b-4218-b556-10f9df0f41fb",
+        "fromTable": "Sales FactSales",
         "fromColumn": "ArticleKey",
-        "toTable": "DimArticle",
+        "toTable": "Sales DimArticle",
         "toColumn": "ArticleKey"
       },
       {
-        "name": "a712fbda-dc06-47d8-8e82-2cd29304777b",
-        "fromTable": "FactSales",
+        "name": "bd6c1a00-8e40-43d1-8ab1-2be12db97392",
+        "fromTable": "Sales FactSales",
         "fromColumn": "CustomerKey",
-        "toTable": "DimCustomer",
+        "toTable": "Sales DimCustomer",
         "toColumn": "CustomerKey"
       },
       {
-        "name": "3565b400-6449-473e-b3d2-36b6c3134393",
-        "fromTable": "FactSales",
+        "name": "5ac0d59e-f55d-47fd-bd52-8b966997d5f7",
+        "fromTable": "Sales FactSales",
         "fromColumn": "SalesChannelKey",
-        "toTable": "DimSalesChannel",
+        "toTable": "Sales DimSalesChannel",
         "toColumn": "SalesChannelKey"
       },
       {
-        "name": "f98164c6-64a2-42d8-9480-7860a64e4739",
-        "fromTable": "FactSales",
+        "name": "7d6b9d2b-edc6-4a16-bdc4-c279ad2b6e62",
+        "fromTable": "Sales FactSales",
         "fromColumn": "TemporadaKey",
-        "toTable": "DimTemporada",
+        "toTable": "Sales DimTemporada",
         "toColumn": "TemporadaKey"
-      },
-      {
-        "name": "1f5ac11a-a9f8-4e9d-8c95-418a10d868d9",
-        "fromTable": "vw_FactSalesGoals",
-        "fromColumn": "CategoryID",
-        "toTable": "vw_DimCategory",
-        "toColumn": "CategoryID"
-      },
-      {
-        "name": "cd3b9344-f165-496b-8399-fdb5a759a4ca",
-        "fromTable": "vw_FactSalesMonthCategory",
-        "fromColumn": "CategoryID",
-        "toTable": "vw_DimCategory",
-        "toColumn": "CategoryID"
-      },
-      {
-        "name": "a0b2e221-8f09-4c97-bea3-dcead34b8568",
-        "fromTable": "vw_FactSalesMonthCategory",
-        "fromColumn": "MontKey",
-        "toTable": "vw_DimMonth",
-        "toColumn": "FechaKey"
-      },
-      {
-        "name": "a370abb9-3c06-48c8-b4a7-514d74e47855",
-        "fromTable": "vw_FactSalesGoals",
-        "fromColumn": "MontKey",
-        "toTable": "vw_DimMonth",
-        "toColumn": "FechaKey"
-      }
-    ],
-    "annotations": [
-      {
-        "name": "ClientCompatibilityLevel",
-        "value": "800"
       }
     ]
   },
