@@ -14,8 +14,8 @@
   DTS:ObjectName="FactSales"
   DTS:PackageType="5"
   DTS:TransactionOption="0"
-  DTS:VersionBuild="37"
-  DTS:VersionGUID="{FBE0F135-4232-4352-89F2-5C920804E55F}">
+  DTS:VersionBuild="38"
+  DTS:VersionGUID="{294B9A71-AF0C-4222-B88A-A44F9994DB86}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:Variables>
@@ -2002,11 +2002,11 @@ where [refTable].[Fecha] = ? and [refTable].[CustomerID] = ? and [refTable].[Art
                         <property
                           containsID="true"
                           dataType="System.String"
-                          name="Expression">(DT_NUMERIC,18,4)[ROUND](#{Package\Fact Sales\Data Conversion.Outputs[Data Conversion Output].Columns[Price]} * 40000,4)</property>
+                          name="Expression">(DT_NUMERIC,18,4)[ROUND](#{Package\Fact Sales\Data Conversion.Outputs[Data Conversion Output].Columns[Price]} * 0.4,4)</property>
                         <property
                           containsID="true"
                           dataType="System.String"
-                          name="FriendlyExpression">(DT_NUMERIC,18,4)ROUND(Price * 40000,4)</property>
+                          name="FriendlyExpression">(DT_NUMERIC,18,4)ROUND(Price * 0.4,4)</property>
                       </properties>
                     </outputColumn>
                   </outputColumns>

@@ -13,6 +13,8 @@ BEGIN
 
         -- Conservar el comodín
         DELETE FROM Sales.DimCustomer WHERE CustomerKey<>-1;
+        IF EXISTS (SELECT 1 FROM sys.identity_columns WHERE object_id=OBJECT_ID(N'Sales.DimCustomer') AND last_value IS NOT NULL)
+            DBCC CHECKIDENT (N'Sales.DimCustomer', RESEED, 0) WITH NO_INFOMSGS;
 
         -- Preparar los atributos de Stage
         ;WITH Leidos AS (
@@ -86,6 +88,8 @@ BEGIN
 
         -- Conservar el comodín
         DELETE FROM Sales.DimArticle WHERE ArticleKey<>-1;
+        IF EXISTS (SELECT 1 FROM sys.identity_columns WHERE object_id=OBJECT_ID(N'Sales.DimArticle') AND last_value IS NOT NULL)
+            DBCC CHECKIDENT (N'Sales.DimArticle', RESEED, 0) WITH NO_INFOMSGS;
 
         -- Preparar los atributos de Stage
         ;WITH Leidos AS (
@@ -225,6 +229,8 @@ BEGIN
     BEGIN TRY
         BEGIN TRANSACTION;
         DELETE FROM Sales.DimTemporada WHERE TemporadaKey<>-1;
+        IF EXISTS (SELECT 1 FROM sys.identity_columns WHERE object_id=OBJECT_ID(N'Sales.DimTemporada') AND last_value IS NOT NULL)
+            DBCC CHECKIDENT (N'Sales.DimTemporada', RESEED, 0) WITH NO_INFOMSGS;
         ;WITH Leidos AS (
             SELECT TRY_CONVERT(INT,NULLIF(LTRIM(RTRIM(TemporadaID)),N'')) AS TemporadaID,
                 COALESCE(CASE WHEN LEN(LTRIM(RTRIM(Temporada)))<=20 THEN NULLIF(LTRIM(RTRIM(Temporada)),N'') END,N'Sin Datos') AS Temporada,
