@@ -2,6 +2,7 @@
   "name": "SemanticModel",
   "compatibilityLevel": 1700,
   "model": {
+    "name": "Modelo",
     "culture": "es-PE",
     "dataSources": [
       {
@@ -24,32 +25,52 @@
     ],
     "tables": [
       {
-        "name": "Sales vw_DimCategory",
+        "name": "vw_DimCategory",
         "columns": [
           {
             "name": "CategoryID",
             "dataType": "int64",
-            "sourceColumn": "CategoryID"
+            "sourceColumn": "CategoryID",
+            "summarizeBy": "none"
           },
           {
             "name": "DepartmentName",
             "dataType": "string",
-            "sourceColumn": "DepartmentName"
+            "sourceColumn": "DepartmentName",
+            "summarizeBy": "none"
           },
           {
             "name": "SectionName",
             "dataType": "string",
-            "sourceColumn": "SectionName"
+            "sourceColumn": "SectionName",
+            "summarizeBy": "none"
           },
           {
             "name": "Temporada",
             "dataType": "string",
-            "sourceColumn": "Temporada"
+            "sourceColumn": "Temporada",
+            "summarizeBy": "none"
           },
           {
             "name": "TemporadaID",
             "dataType": "int64",
-            "sourceColumn": "TemporadaID"
+            "sourceColumn": "TemporadaID",
+            "summarizeBy": "none"
+          },
+          {
+            "type": "calculated",
+            "name": "Orden_Estacion",
+            "dataType": "int64",
+            "expression": "VAR T = LOWER(vw_DimCategory[Temporada]) RETURN SWITCH(TRUE(), CONTAINSSTRING(T, \"verano\"), 1, CONTAINSSTRING(T, \"otoño\") || CONTAINSSTRING(T, \"otono\"), 2, CONTAINSSTRING(T, \"invierno\"), 3, CONTAINSSTRING(T, \"primavera\"), 4, 5)",
+            "summarizeBy": "none"
+          },
+          {
+            "type": "calculated",
+            "name": "Estacion",
+            "dataType": "string",
+            "expression": "VAR T = LOWER(vw_DimCategory[Temporada]) RETURN SWITCH(TRUE(), CONTAINSSTRING(T, \"verano\"), \"Verano\", CONTAINSSTRING(T, \"otoño\") || CONTAINSSTRING(T, \"otono\"), \"Otoño\", CONTAINSSTRING(T, \"invierno\"), \"Invierno\", CONTAINSSTRING(T, \"primavera\"), \"Primavera\", \"Sin dato\")",
+            "sortByColumn": "Orden_Estacion",
+            "summarizeBy": "none"
           }
         ],
         "partitions": [
@@ -70,32 +91,54 @@
         ]
       },
       {
-        "name": "Sales vw_DimMonth",
+        "name": "vw_DimMonth",
         "columns": [
           {
             "name": "FechaKey",
             "dataType": "string",
-            "sourceColumn": "FechaKey"
+            "sourceColumn": "FechaKey",
+            "summarizeBy": "none"
           },
           {
             "name": "Fecha",
             "dataType": "dateTime",
-            "sourceColumn": "Fecha"
+            "sourceColumn": "Fecha",
+            "formatString": "dd/MM/yyyy",
+            "summarizeBy": "none"
           },
           {
             "name": "Nombre_Mes",
             "dataType": "string",
-            "sourceColumn": "Nombre_Mes"
+            "sourceColumn": "Nombre_Mes",
+            "sortByColumn": "Mes_Anio",
+            "summarizeBy": "none"
           },
           {
             "name": "Mes_Anio",
             "dataType": "int64",
-            "sourceColumn": "Mes_Anio"
+            "sourceColumn": "Mes_Anio",
+            "summarizeBy": "none"
           },
           {
             "name": "Anio",
             "dataType": "int64",
-            "sourceColumn": "Anio"
+            "sourceColumn": "Anio",
+            "summarizeBy": "none"
+          },
+          {
+            "type": "calculated",
+            "name": "Periodo_Orden",
+            "dataType": "int64",
+            "expression": "IF(vw_DimMonth[FechaKey] = \"-1\", -1, vw_DimMonth[Anio] * 100 + vw_DimMonth[Mes_Anio])",
+            "summarizeBy": "none"
+          },
+          {
+            "type": "calculated",
+            "name": "Periodo",
+            "dataType": "string",
+            "expression": "IF(vw_DimMonth[FechaKey] = \"-1\", \"Sin fecha\", vw_DimMonth[Nombre_Mes] & \" \" & FORMAT(vw_DimMonth[Anio], \"0\"))",
+            "sortByColumn": "Periodo_Orden",
+            "summarizeBy": "none"
           }
         ],
         "partitions": [
@@ -116,27 +159,32 @@
         ]
       },
       {
-        "name": "Sales vw_FactSalesGoals",
+        "name": "vw_FactSalesGoals",
         "columns": [
           {
             "name": "CategoryID",
             "dataType": "int64",
-            "sourceColumn": "CategoryID"
+            "sourceColumn": "CategoryID",
+            "summarizeBy": "none"
           },
           {
             "name": "MontKey",
             "dataType": "string",
-            "sourceColumn": "MontKey"
+            "sourceColumn": "MontKey",
+            "summarizeBy": "none"
           },
           {
             "name": "Escenario",
             "dataType": "string",
-            "sourceColumn": "Escenario"
+            "sourceColumn": "Escenario",
+            "summarizeBy": "none"
           },
           {
             "name": "SubTotal",
-            "dataType": "double",
-            "sourceColumn": "SubTotal"
+            "dataType": "decimal",
+            "sourceColumn": "SubTotal",
+            "formatString": "#,0.00",
+            "summarizeBy": "none"
           }
         ],
         "partitions": [
@@ -154,25 +202,115 @@
               ]
             }
           }
+        ],
+        "measures": [
+          {
+            "name": ".Escenario_Seleccionado",
+            "description": "Escenario seleccionado",
+            "expression": "IF(HASONEVALUE(vw_FactSalesGoals[Escenario]), SELECTEDVALUE(vw_FactSalesGoals[Escenario]), IF(NOT(ISFILTERED(vw_FactSalesGoals[Escenario])), MINX(ALL(vw_FactSalesGoals[Escenario]), vw_FactSalesGoals[Escenario])))",
+            "formatString": "General",
+            "displayFolder": "Apoyo_visual"
+          },
+          {
+            "name": ".Meta_Ventas",
+            "description": "3.16 · Meta de ventas",
+            "expression": "VAR E = [.Escenario_Seleccionado] RETURN IF(NOT(ISBLANK(E)), CALCULATE(SUM(vw_FactSalesGoals[SubTotal]), KEEPFILTERS(vw_FactSalesGoals[Escenario] = E)))",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": ".Ventas_Comparables_Meta",
+            "description": "3.17 · Ventas comparables con la meta",
+            "expression": [
+              "VAR E = [.Escenario_Seleccionado]",
+              "VAR Claves = CALCULATETABLE(SUMMARIZE(vw_FactSalesGoals, vw_FactSalesGoals[CategoryID], vw_FactSalesGoals[MontKey]), KEEPFILTERS(vw_FactSalesGoals[Escenario] = E))",
+              "RETURN IF(NOT(ISBLANK(E)) && COUNTROWS(Claves) > 0,",
+              " COALESCE(CALCULATE([.Ventas_Mensuales], KEEPFILTERS(TREATAS(Claves, vw_FactSalesMonthCategory[CategoryID], vw_FactSalesMonthCategory[MontKey]))), 0))"
+            ],
+            "formatString": "#,0.00"
+          },
+          {
+            "name": ".%Cumplimiento_Meta",
+            "description": "3.18 · Cumplimiento de la meta",
+            "expression": "VAR M = [.Meta_Ventas] RETURN IF(NOT(ISBLANK(M)) && M > 0, DIVIDE([.Ventas_Comparables_Meta], M))",
+            "formatString": "0.0%"
+          },
+          {
+            "name": ".Brecha_Meta",
+            "description": "3.19 · Brecha frente a meta",
+            "expression": "VAR M = [.Meta_Ventas] RETURN IF(NOT(ISBLANK(M)), [.Ventas_Comparables_Meta] - M)",
+            "formatString": "+#,0.00;-#,0.00;0.00"
+          },
+          {
+            "name": ".%Cobertura_Metas",
+            "description": "3.20 · Cobertura de metas",
+            "expression": "IF(NOT(ISBLANK([.Escenario_Seleccionado])), DIVIDE(COALESCE([.Ventas_Comparables_Meta], 0), [.Ventas_Mensuales]))",
+            "formatString": "0.0%"
+          },
+          {
+            "name": ".KPI_Meta_Ventas",
+            "description": "Meta de ventas",
+            "expression": "VAR V = [.Meta_Ventas] RETURN IF(ISBLANK(V), \"—\", FORMAT(V, \"#,0.00\"))",
+            "formatString": "General",
+            "displayFolder": "Apoyo_visual"
+          },
+          {
+            "name": ".KPI_Ventas_Comparables_Meta",
+            "description": "Ventas comparables con la meta",
+            "expression": "VAR V = [.Ventas_Comparables_Meta] RETURN IF(ISBLANK(V), \"—\", FORMAT(V, \"#,0.00\"))",
+            "formatString": "General",
+            "displayFolder": "Apoyo_visual"
+          },
+          {
+            "name": ".KPI_Cumplimiento_Meta",
+            "description": "Cumplimiento de la meta",
+            "expression": "VAR V = [.%Cumplimiento_Meta] VAR M = [.Meta_Ventas] RETURN IF(ISBLANK(M), \"Sin meta\", IF(M = 0, \"Sin base\", FORMAT(V, \"0.0%\")))",
+            "formatString": "General",
+            "displayFolder": "Apoyo_visual"
+          },
+          {
+            "name": ".KPI_Brecha_Meta",
+            "description": "Brecha frente a meta",
+            "expression": "VAR V = [.Brecha_Meta] RETURN IF(ISBLANK(V), \"—\", FORMAT(V, \"#,0.00\"))",
+            "formatString": "General",
+            "displayFolder": "Apoyo_visual"
+          },
+          {
+            "name": ".KPI_Cobertura_Metas",
+            "description": "Cobertura de metas",
+            "expression": "VAR V = [.%Cobertura_Metas] RETURN IF(ISBLANK(V), \"—\", FORMAT(V, \"0.0%\"))",
+            "formatString": "General",
+            "displayFolder": "Apoyo_visual"
+          },
+          {
+            "name": ".Color_Brecha_Meta",
+            "description": "Apoyo de formato: rojo para brecha negativa y verde para positiva.",
+            "expression": "VAR B = [.Brecha_Meta] RETURN IF(ISBLANK(B), \"#FFFFFF\", IF(B < 0, \"#F4A2B0\", IF(B > 0, \"#A2D8BC\", \"#FFFFFF\")))",
+            "formatString": "General",
+            "displayFolder": "Apoyo_visual"
+          }
         ]
       },
       {
-        "name": "Sales vw_FactSalesMonthCategory",
+        "name": "vw_FactSalesMonthCategory",
         "columns": [
           {
             "name": "CategoryID",
             "dataType": "int64",
-            "sourceColumn": "CategoryID"
+            "sourceColumn": "CategoryID",
+            "summarizeBy": "none"
           },
           {
             "name": "MontKey",
             "dataType": "string",
-            "sourceColumn": "MontKey"
+            "sourceColumn": "MontKey",
+            "summarizeBy": "none"
           },
           {
             "name": "SubTotal",
-            "dataType": "double",
-            "sourceColumn": "SubTotal"
+            "dataType": "decimal",
+            "sourceColumn": "SubTotal",
+            "formatString": "#,0.00",
+            "summarizeBy": "none"
           }
         ],
         "partitions": [
@@ -190,40 +328,56 @@
               ]
             }
           }
+        ],
+        "measures": [
+          {
+            "name": ".Ventas_Mensuales",
+            "description": "Ventas mensuales",
+            "expression": "SUM(vw_FactSalesMonthCategory[SubTotal])",
+            "formatString": "#,0.00",
+            "displayFolder": "Apoyo_visual"
+          }
         ]
       },
       {
-        "name": "Sales FactSales",
+        "name": "FactSales",
         "columns": [
           {
             "name": "FechaKey",
             "dataType": "int64",
-            "sourceColumn": "FechaKey"
+            "sourceColumn": "FechaKey",
+            "summarizeBy": "none"
           },
           {
             "name": "CustomerKey",
             "dataType": "int64",
-            "sourceColumn": "CustomerKey"
+            "sourceColumn": "CustomerKey",
+            "summarizeBy": "none"
           },
           {
             "name": "ArticleKey",
             "dataType": "int64",
-            "sourceColumn": "ArticleKey"
+            "sourceColumn": "ArticleKey",
+            "summarizeBy": "none"
           },
           {
             "name": "TemporadaKey",
             "dataType": "int64",
-            "sourceColumn": "TemporadaKey"
+            "sourceColumn": "TemporadaKey",
+            "summarizeBy": "none"
           },
           {
             "name": "SalesChannelKey",
             "dataType": "int64",
-            "sourceColumn": "SalesChannelKey"
+            "sourceColumn": "SalesChannelKey",
+            "summarizeBy": "none"
           },
           {
             "name": "Price",
-            "dataType": "double",
-            "sourceColumn": "Price"
+            "dataType": "decimal",
+            "sourceColumn": "Price",
+            "formatString": "#,0.00",
+            "summarizeBy": "none"
           }
         ],
         "partitions": [
@@ -241,85 +395,422 @@
               ]
             }
           }
+        ],
+        "measures": [
+          {
+            "name": ".Importe_Ventas",
+            "description": "3.1 · Importe de ventas",
+            "expression": "SUM(FactSales[Price])",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": ".Registros_Venta",
+            "description": "3.2 · Registros de venta",
+            "expression": "COUNTROWS(FactSales)",
+            "formatString": "#,0"
+          },
+          {
+            "name": ".Compradores_Identificados",
+            "description": "3.3 · Compradores identificados",
+            "expression": "CALCULATE(DISTINCTCOUNT(FactSales[CustomerKey]), KEEPFILTERS(FactSales[CustomerKey] <> -1))",
+            "formatString": "#,0"
+          },
+          {
+            "name": ".Articulos_Con_Venta",
+            "description": "3.4 · Artículos con venta",
+            "expression": "CALCULATE(DISTINCTCOUNT(FactSales[ArticleKey]), KEEPFILTERS(FactSales[ArticleKey] <> -1))",
+            "formatString": "#,0"
+          },
+          {
+            "name": ".Importe_Por_Registro",
+            "description": "3.5 · Importe por registro",
+            "expression": "DIVIDE([.Importe_Ventas], [.Registros_Venta])",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": ".Importe_Por_Comprador",
+            "description": "3.6 · Importe por comprador",
+            "expression": "DIVIDE([.Importe_Ventas], [.Compradores_Identificados])",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": ".Registros_Por_Comprador",
+            "description": "3.7 · Registros por comprador",
+            "expression": "DIVIDE([.Registros_Venta], [.Compradores_Identificados])",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": ".Compradores_Recurrentes",
+            "description": "A1 · Compradores recurrentes",
+            "expression": [
+              "VAR C = CALCULATETABLE(",
+              " SUMMARIZECOLUMNS(FactSales[CustomerKey], \"_Primera\", MIN(FactSales[FechaKey]), \"_Ultima\", MAX(FactSales[FechaKey])),",
+              " KEEPFILTERS(FactSales[CustomerKey] <> -1), KEEPFILTERS(FactSales[FechaKey] <> -1))",
+              "RETURN IF([.Compradores_Identificados] > 0, COALESCE(COUNTROWS(FILTER(C, [_Primera] <> [_Ultima])), 0))"
+            ],
+            "formatString": "#,0"
+          },
+          {
+            "name": ".Dias_Compra_Por_Comprador",
+            "description": "A2 · Días de compra por comprador",
+            "expression": "DIVIDE(COUNTROWS(SUMMARIZE(FactSales, FactSales[CustomerKey], FactSales[FechaKey])), [.Compradores_Identificados])",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": ".%Recurrencia_Compra",
+            "description": "3.8 · Recurrencia de compra",
+            "expression": "DIVIDE([.Compradores_Recurrentes], [.Compradores_Identificados])",
+            "formatString": "0.0%"
+          },
+          {
+            "name": ".%Participacion_Ventas",
+            "description": "3.9 · Participación de ventas",
+            "expression": [
+              "VAR TotalGrupo = SWITCH(TRUE(),",
+              " ISINSCOPE(DimSalesChannel[SalesChannelName]), CALCULATE([.Importe_Ventas], ALLSELECTED(DimSalesChannel[SalesChannelName])),",
+              " ISINSCOPE(DimCustomer[ClubMemberStatus]), CALCULATE([.Importe_Ventas], ALLSELECTED(DimCustomer[ClubMemberStatus])),",
+              " ISINSCOPE(DimArticle[ProductGroupName]), CALCULATE([.Importe_Ventas], ALLSELECTED(DimArticle[ProductGroupName])),",
+              " CALCULATE([.Importe_Ventas], ALLSELECTED()))",
+              "RETURN DIVIDE([.Importe_Ventas], TotalGrupo)"
+            ],
+            "formatString": "0.0%"
+          },
+          {
+            "name": ".%Top_10_Registros",
+            "description": "3.10 · Participación Top 10 en registros",
+            "expression": [
+              "VAR A = FILTER(ADDCOLUMNS(ALLSELECTED(DimArticle[ArticleKey]), \"_Registros\", CALCULATE([.Registros_Venta])), DimArticle[ArticleKey] <> -1 && [_Registros] > 0)",
+              "VAR T = TOPN(10, A, [_Registros], DESC, DimArticle[ArticleKey], ASC)",
+              "RETURN DIVIDE(SUMX(T, [_Registros]), [.Registros_Venta])"
+            ],
+            "formatString": "0.0%"
+          },
+          {
+            "name": ".Articulos_Catalogo",
+            "description": "3.11 · Artículos del catálogo",
+            "expression": "CALCULATE(DISTINCTCOUNT(DimArticle[ArticleKey]), KEEPFILTERS(DimArticle[ArticleKey] <> -1))",
+            "formatString": "#,0"
+          },
+          {
+            "name": ".%Cobertura_Catalogo",
+            "description": "3.12 · Cobertura comercial del catálogo",
+            "expression": "DIVIDE([.Articulos_Con_Venta], [.Articulos_Catalogo])",
+            "formatString": "0.0%"
+          },
+          {
+            "name": ".Dias_Con_Actividad",
+            "description": "A3 · Días con actividad",
+            "expression": "CALCULATE(DISTINCTCOUNT(FactSales[FechaKey]), KEEPFILTERS(FactSales[FechaKey] <> -1))",
+            "formatString": "#,0"
+          },
+          {
+            "name": ".Venta_Por_Dia_Activo",
+            "description": "3.13 · Venta por día con actividad",
+            "expression": "DIVIDE([.Importe_Ventas], [.Dias_Con_Actividad])",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": ".Importe_Periodo_Base",
+            "description": "A4 · Importe del periodo base",
+            "expression": [
+              "VAR TieneBase = ISCROSSFILTERED(Periodo_Base)",
+              "VAR InicioA = MINX(FILTER(ALLSELECTED(DimFecha), DimFecha[FechaKey] <> -1), DimFecha[Fecha])",
+              "VAR InicioB = MINX(ALLSELECTED(Periodo_Base), Periodo_Base[Fecha])",
+              "VAR OrdA = YEAR(InicioA) * 12 + MONTH(InicioA)",
+              "VAR OrdB = YEAR(InicioB) * 12 + MONTH(InicioB)",
+              "VAR EjeMensual = ISINSCOPE(DimFecha[Periodo]) || ISINSCOPE(DimFecha[Periodo_Orden]) || ISINSCOPE(DimFecha[Nombre_Mes])",
+              "VAR Posiciones = SELECTCOLUMNS(VALUES(DimFecha[Mes_Ordinal]), \"_Pos\", DimFecha[Mes_Ordinal] - OrdA)",
+              "VAR FechasElegidas = SELECTCOLUMNS(FILTER(Periodo_Base, NOT(EjeMensual) || Periodo_Base[Mes_Ordinal] - OrdB IN Posiciones), \"_Fecha\", Periodo_Base[Fecha])",
+              "VAR FechasAutomaticas = SELECTCOLUMNS(FILTER(VALUES(DimFecha[Fecha]), NOT(ISBLANK(DimFecha[Fecha]))), \"_Fecha\", EDATE(DimFecha[Fecha], -12))",
+              "VAR FechasB = UNION(FILTER(FechasElegidas, TieneBase), FILTER(FechasAutomaticas, NOT(TieneBase)))",
+              "VAR EstacionesB = VALUES(vw_DimCategory[TemporadaID])",
+              "RETURN CALCULATE([.Importe_Ventas], REMOVEFILTERS(DimFecha), TREATAS(FechasB, DimFecha[Fecha]), REMOVEFILTERS(DimTemporada), TREATAS(EstacionesB, DimTemporada[TemporadaID]))"
+            ],
+            "formatString": "#,0.00"
+          },
+          {
+            "name": ".Registros_Periodo_Base",
+            "description": "A5 · Registros del periodo base",
+            "expression": [
+              "VAR TieneBase = ISCROSSFILTERED(Periodo_Base)",
+              "VAR InicioA = MINX(FILTER(ALLSELECTED(DimFecha), DimFecha[FechaKey] <> -1), DimFecha[Fecha])",
+              "VAR InicioB = MINX(ALLSELECTED(Periodo_Base), Periodo_Base[Fecha])",
+              "VAR OrdA = YEAR(InicioA) * 12 + MONTH(InicioA)",
+              "VAR OrdB = YEAR(InicioB) * 12 + MONTH(InicioB)",
+              "VAR EjeMensual = ISINSCOPE(DimFecha[Periodo]) || ISINSCOPE(DimFecha[Periodo_Orden]) || ISINSCOPE(DimFecha[Nombre_Mes])",
+              "VAR Posiciones = SELECTCOLUMNS(VALUES(DimFecha[Mes_Ordinal]), \"_Pos\", DimFecha[Mes_Ordinal] - OrdA)",
+              "VAR FechasElegidas = SELECTCOLUMNS(FILTER(Periodo_Base, NOT(EjeMensual) || Periodo_Base[Mes_Ordinal] - OrdB IN Posiciones), \"_Fecha\", Periodo_Base[Fecha])",
+              "VAR FechasAutomaticas = SELECTCOLUMNS(FILTER(VALUES(DimFecha[Fecha]), NOT(ISBLANK(DimFecha[Fecha]))), \"_Fecha\", EDATE(DimFecha[Fecha], -12))",
+              "VAR FechasB = UNION(FILTER(FechasElegidas, TieneBase), FILTER(FechasAutomaticas, NOT(TieneBase)))",
+              "VAR EstacionesB = VALUES(vw_DimCategory[TemporadaID])",
+              "RETURN CALCULATE([.Registros_Venta], REMOVEFILTERS(DimFecha), TREATAS(FechasB, DimFecha[Fecha]), REMOVEFILTERS(DimTemporada), TREATAS(EstacionesB, DimTemporada[TemporadaID]))"
+            ],
+            "formatString": "#,0"
+          },
+          {
+            "name": ".Dias_Base",
+            "description": "Días de actividad de la base",
+            "expression": [
+              "VAR TieneBase = ISCROSSFILTERED(Periodo_Base)",
+              "VAR InicioA = MINX(FILTER(ALLSELECTED(DimFecha), DimFecha[FechaKey] <> -1), DimFecha[Fecha])",
+              "VAR InicioB = MINX(ALLSELECTED(Periodo_Base), Periodo_Base[Fecha])",
+              "VAR OrdA = YEAR(InicioA) * 12 + MONTH(InicioA)",
+              "VAR OrdB = YEAR(InicioB) * 12 + MONTH(InicioB)",
+              "VAR EjeMensual = ISINSCOPE(DimFecha[Periodo]) || ISINSCOPE(DimFecha[Periodo_Orden]) || ISINSCOPE(DimFecha[Nombre_Mes])",
+              "VAR Posiciones = SELECTCOLUMNS(VALUES(DimFecha[Mes_Ordinal]), \"_Pos\", DimFecha[Mes_Ordinal] - OrdA)",
+              "VAR FechasElegidas = SELECTCOLUMNS(FILTER(Periodo_Base, NOT(EjeMensual) || Periodo_Base[Mes_Ordinal] - OrdB IN Posiciones), \"_Fecha\", Periodo_Base[Fecha])",
+              "VAR FechasAutomaticas = SELECTCOLUMNS(FILTER(VALUES(DimFecha[Fecha]), NOT(ISBLANK(DimFecha[Fecha]))), \"_Fecha\", EDATE(DimFecha[Fecha], -12))",
+              "VAR FechasB = UNION(FILTER(FechasElegidas, TieneBase), FILTER(FechasAutomaticas, NOT(TieneBase)))",
+              "VAR EstacionesB = VALUES(vw_DimCategory[TemporadaID])",
+              "RETURN CALCULATE([.Dias_Con_Actividad], REMOVEFILTERS(DimFecha), TREATAS(FechasB, DimFecha[Fecha]), REMOVEFILTERS(DimTemporada), TREATAS(EstacionesB, DimTemporada[TemporadaID]))"
+            ],
+            "formatString": "#,0",
+            "displayFolder": "Apoyo_visual"
+          },
+          {
+            "name": ".%Variacion_Ventas",
+            "description": "3.14 · Variación de ventas entre periodos",
+            "expression": "VAR B = [.Importe_Periodo_Base] RETURN IF(NOT(ISBLANK([.Importe_Ventas])) && NOT(ISBLANK(B)) && B <> 0, DIVIDE([.Importe_Ventas] - B, B))",
+            "formatString": "0.0%;-0.0%;0.0%"
+          },
+          {
+            "name": ".%Variacion_Registros",
+            "description": "3.15 · Variación de registros entre periodos",
+            "expression": "VAR B = [.Registros_Periodo_Base] RETURN IF(NOT(ISBLANK([.Registros_Venta])) && NOT(ISBLANK(B)) && B <> 0, DIVIDE([.Registros_Venta] - B, B))",
+            "formatString": "0.0%;-0.0%;0.0%"
+          },
+          {
+            "name": ".KPI_Importe_Ventas",
+            "description": "Importe de ventas",
+            "expression": "VAR V = [.Importe_Ventas] RETURN IF(ISBLANK(V), \"—\", FORMAT(V, \"#,0.00\"))",
+            "formatString": "General",
+            "displayFolder": "Apoyo_visual"
+          },
+          {
+            "name": ".KPI_Registros_Venta",
+            "description": "Registros de venta",
+            "expression": "VAR V = [.Registros_Venta] RETURN IF(ISBLANK(V), \"—\", FORMAT(V, \"#,0\"))",
+            "formatString": "General",
+            "displayFolder": "Apoyo_visual"
+          },
+          {
+            "name": ".KPI_Compradores_Identificados",
+            "description": "Compradores identificados",
+            "expression": "VAR V = [.Compradores_Identificados] RETURN IF(ISBLANK(V), \"—\", FORMAT(V, \"#,0\"))",
+            "formatString": "General",
+            "displayFolder": "Apoyo_visual"
+          },
+          {
+            "name": ".KPI_Articulos_Con_Venta",
+            "description": "Artículos con venta",
+            "expression": "VAR V = [.Articulos_Con_Venta] RETURN IF(ISBLANK(V), \"—\", FORMAT(V, \"#,0\"))",
+            "formatString": "General",
+            "displayFolder": "Apoyo_visual"
+          },
+          {
+            "name": ".KPI_Importe_Por_Registro",
+            "description": "Importe por registro",
+            "expression": "VAR V = [.Importe_Por_Registro] RETURN IF(ISBLANK(V), \"—\", FORMAT(V, \"#,0.00\"))",
+            "formatString": "General",
+            "displayFolder": "Apoyo_visual"
+          },
+          {
+            "name": ".KPI_Importe_Por_Comprador",
+            "description": "Importe por comprador",
+            "expression": "VAR V = [.Importe_Por_Comprador] RETURN IF(ISBLANK(V), \"—\", FORMAT(V, \"#,0.00\"))",
+            "formatString": "General",
+            "displayFolder": "Apoyo_visual"
+          },
+          {
+            "name": ".KPI_Registros_Por_Comprador",
+            "description": "Registros por comprador",
+            "expression": "VAR V = [.Registros_Por_Comprador] RETURN IF(ISBLANK(V), \"—\", FORMAT(V, \"#,0.00\"))",
+            "formatString": "General",
+            "displayFolder": "Apoyo_visual"
+          },
+          {
+            "name": ".KPI_Recurrencia_Compra",
+            "description": "Recurrencia de compra",
+            "expression": "VAR V = [.%Recurrencia_Compra] RETURN IF(ISBLANK(V), \"—\", FORMAT(V, \"0.0%\"))",
+            "formatString": "General",
+            "displayFolder": "Apoyo_visual"
+          },
+          {
+            "name": ".KPI_Top_10_Registros",
+            "description": "Participación Top 10 en registros",
+            "expression": "VAR V = [.%Top_10_Registros] RETURN IF(ISBLANK(V), \"—\", FORMAT(V, \"0.0%\"))",
+            "formatString": "General",
+            "displayFolder": "Apoyo_visual"
+          },
+          {
+            "name": ".KPI_Articulos_Catalogo",
+            "description": "Artículos del catálogo",
+            "expression": "VAR V = [.Articulos_Catalogo] RETURN IF(ISBLANK(V), \"—\", FORMAT(V, \"#,0\"))",
+            "formatString": "General",
+            "displayFolder": "Apoyo_visual"
+          },
+          {
+            "name": ".KPI_Cobertura_Catalogo",
+            "description": "Cobertura comercial del catálogo",
+            "expression": "VAR V = [.%Cobertura_Catalogo] RETURN IF(ISBLANK(V), \"—\", FORMAT(V, \"0.0%\"))",
+            "formatString": "General",
+            "displayFolder": "Apoyo_visual"
+          },
+          {
+            "name": ".KPI_Venta_Por_Dia_Activo",
+            "description": "Venta por día con actividad",
+            "expression": "VAR V = [.Venta_Por_Dia_Activo] RETURN IF(ISBLANK(V), \"—\", FORMAT(V, \"#,0.00\"))",
+            "formatString": "General",
+            "displayFolder": "Apoyo_visual"
+          },
+          {
+            "name": ".KPI_Variacion_Ventas",
+            "description": "Variación de ventas entre periodos",
+            "expression": "VAR V = [.%Variacion_Ventas] RETURN IF(ISBLANK(V), \"Sin base\", FORMAT(V, \"0.0%;-0.0%;0.0%\"))",
+            "formatString": "General",
+            "displayFolder": "Apoyo_visual"
+          },
+          {
+            "name": ".KPI_Variacion_Registros",
+            "description": "Variación de registros entre periodos",
+            "expression": "VAR V = [.%Variacion_Registros] RETURN IF(ISBLANK(V), \"Sin base\", FORMAT(V, \"0.0%;-0.0%;0.0%\"))",
+            "formatString": "General",
+            "displayFolder": "Apoyo_visual"
+          }
         ]
       },
       {
-        "name": "GENERICO DimFecha",
+        "name": "DimFecha",
         "columns": [
           {
             "name": "FechaKey",
             "dataType": "int64",
-            "sourceColumn": "FechaKey"
+            "sourceColumn": "FechaKey",
+            "summarizeBy": "none"
           },
           {
             "name": "Fecha",
             "dataType": "dateTime",
-            "sourceColumn": "Fecha"
+            "sourceColumn": "Fecha",
+            "formatString": "dd/MM/yyyy",
+            "summarizeBy": "none"
           },
           {
             "name": "Dia_Semana",
             "dataType": "int64",
-            "sourceColumn": "Dia_Semana"
+            "sourceColumn": "Dia_Semana",
+            "summarizeBy": "none"
           },
           {
             "name": "Nombre_Dia_Semana",
             "dataType": "string",
-            "sourceColumn": "Nombre_Dia_Semana"
+            "sourceColumn": "Nombre_Dia_Semana",
+            "sortByColumn": "Dia_Semana",
+            "summarizeBy": "none"
           },
           {
             "name": "Dia_Mes",
             "dataType": "int64",
-            "sourceColumn": "Dia_Mes"
+            "sourceColumn": "Dia_Mes",
+            "summarizeBy": "none"
           },
           {
             "name": "Dia_Anio",
             "dataType": "int64",
-            "sourceColumn": "Dia_Anio"
+            "sourceColumn": "Dia_Anio",
+            "summarizeBy": "none"
           },
           {
             "name": "Nombre_Mes",
             "dataType": "string",
-            "sourceColumn": "Nombre_Mes"
+            "sourceColumn": "Nombre_Mes",
+            "sortByColumn": "Mes_Anio",
+            "summarizeBy": "none"
           },
           {
             "name": "Mes_Anio",
             "dataType": "int64",
-            "sourceColumn": "Mes_Anio"
+            "sourceColumn": "Mes_Anio",
+            "summarizeBy": "none"
           },
           {
             "name": "Semana_Anio",
             "dataType": "int64",
-            "sourceColumn": "Semana_Anio"
+            "sourceColumn": "Semana_Anio",
+            "summarizeBy": "none"
           },
           {
             "name": "Anio",
             "dataType": "int64",
-            "sourceColumn": "Anio"
+            "sourceColumn": "Anio",
+            "summarizeBy": "none"
           },
           {
             "name": "Bimestre",
             "dataType": "int64",
-            "sourceColumn": "Bimestre"
+            "sourceColumn": "Bimestre",
+            "summarizeBy": "none"
           },
           {
             "name": "Trimestre",
             "dataType": "int64",
-            "sourceColumn": "Trimestre"
+            "sourceColumn": "Trimestre",
+            "summarizeBy": "none"
           },
           {
             "name": "Cuatrimestre",
             "dataType": "int64",
-            "sourceColumn": "Cuatrimestre"
+            "sourceColumn": "Cuatrimestre",
+            "summarizeBy": "none"
           },
           {
             "name": "Semestre",
             "dataType": "int64",
-            "sourceColumn": "Semestre"
+            "sourceColumn": "Semestre",
+            "summarizeBy": "none"
           },
           {
             "name": "Fin_Semana",
             "dataType": "int64",
-            "sourceColumn": "Fin_Semana"
+            "sourceColumn": "Fin_Semana",
+            "summarizeBy": "none"
+          },
+          {
+            "type": "calculated",
+            "name": "Periodo_Orden",
+            "dataType": "int64",
+            "expression": "IF(DimFecha[FechaKey] = -1, -1, DimFecha[Anio] * 100 + DimFecha[Mes_Anio])",
+            "summarizeBy": "none"
+          },
+          {
+            "type": "calculated",
+            "name": "Periodo",
+            "dataType": "string",
+            "expression": "IF(DimFecha[FechaKey] = -1, \"Sin fecha\", DimFecha[Nombre_Mes] & \" \" & FORMAT(DimFecha[Anio], \"0\"))",
+            "sortByColumn": "Periodo_Orden",
+            "summarizeBy": "none"
+          },
+          {
+            "type": "calculated",
+            "name": "Mes_Ordinal",
+            "dataType": "int64",
+            "expression": "IF(DimFecha[FechaKey] = -1, -1, DimFecha[Anio] * 12 + DimFecha[Mes_Anio])",
+            "summarizeBy": "none"
+          },
+          {
+            "type": "calculated",
+            "name": "Semana_Orden",
+            "dataType": "int64",
+            "expression": "IF(DimFecha[FechaKey] = -1, -1, DimFecha[Anio] * 100 + DimFecha[Semana_Anio])",
+            "summarizeBy": "none"
+          },
+          {
+            "type": "calculated",
+            "name": "Anio_Semana",
+            "dataType": "string",
+            "expression": "IF(DimFecha[FechaKey] = -1, \"Sin fecha\", FORMAT(DimFecha[Anio], \"0\") & \" / \" & FORMAT(DimFecha[Semana_Anio], \"00\"))",
+            "sortByColumn": "Semana_Orden",
+            "summarizeBy": "none"
           }
         ],
         "partitions": [
@@ -340,102 +831,128 @@
         ]
       },
       {
-        "name": "Sales DimArticle",
+        "name": "DimArticle",
         "columns": [
           {
             "name": "ArticleKey",
             "dataType": "int64",
-            "sourceColumn": "ArticleKey"
+            "sourceColumn": "ArticleKey",
+            "summarizeBy": "none"
           },
           {
             "name": "ArticleID",
             "dataType": "string",
-            "sourceColumn": "ArticleID"
+            "sourceColumn": "ArticleID",
+            "summarizeBy": "none"
           },
           {
             "name": "ProductCode",
             "dataType": "string",
-            "sourceColumn": "ProductCode"
+            "sourceColumn": "ProductCode",
+            "summarizeBy": "none"
           },
           {
             "name": "ProdName",
             "dataType": "string",
-            "sourceColumn": "ProdName"
+            "sourceColumn": "ProdName",
+            "summarizeBy": "none"
           },
           {
             "name": "ProductTypeName",
             "dataType": "string",
-            "sourceColumn": "ProductTypeName"
+            "sourceColumn": "ProductTypeName",
+            "summarizeBy": "none"
           },
           {
             "name": "ProductGroupName",
             "dataType": "string",
-            "sourceColumn": "ProductGroupName"
+            "sourceColumn": "ProductGroupName",
+            "summarizeBy": "none"
           },
           {
             "name": "GraphicalAppearanceName",
             "dataType": "string",
-            "sourceColumn": "GraphicalAppearanceName"
+            "sourceColumn": "GraphicalAppearanceName",
+            "summarizeBy": "none"
           },
           {
             "name": "ColourGroupName",
             "dataType": "string",
-            "sourceColumn": "ColourGroupName"
+            "sourceColumn": "ColourGroupName",
+            "summarizeBy": "none"
           },
           {
             "name": "PerceivedColourValueName",
             "dataType": "string",
-            "sourceColumn": "PerceivedColourValueName"
+            "sourceColumn": "PerceivedColourValueName",
+            "summarizeBy": "none"
           },
           {
             "name": "PerceivedColourMasterName",
             "dataType": "string",
-            "sourceColumn": "PerceivedColourMasterName"
+            "sourceColumn": "PerceivedColourMasterName",
+            "summarizeBy": "none"
           },
           {
             "name": "DepartmentNo",
             "dataType": "int64",
-            "sourceColumn": "DepartmentNo"
+            "sourceColumn": "DepartmentNo",
+            "summarizeBy": "none"
           },
           {
             "name": "DepartmentName",
             "dataType": "string",
-            "sourceColumn": "DepartmentName"
+            "sourceColumn": "DepartmentName",
+            "summarizeBy": "none"
           },
           {
             "name": "IndexCode",
             "dataType": "string",
-            "sourceColumn": "IndexCode"
+            "sourceColumn": "IndexCode",
+            "summarizeBy": "none"
           },
           {
             "name": "IndexName",
             "dataType": "string",
-            "sourceColumn": "IndexName"
+            "sourceColumn": "IndexName",
+            "summarizeBy": "none"
           },
           {
             "name": "IndexGroupName",
             "dataType": "string",
-            "sourceColumn": "IndexGroupName"
+            "sourceColumn": "IndexGroupName",
+            "summarizeBy": "none"
           },
           {
             "name": "SectionNo",
             "dataType": "int64",
-            "sourceColumn": "SectionNo"
+            "sourceColumn": "SectionNo",
+            "summarizeBy": "none"
           },
           {
             "name": "SectionName",
             "dataType": "string",
-            "sourceColumn": "SectionName"
+            "sourceColumn": "SectionName",
+            "summarizeBy": "none"
           },
           {
             "name": "GarmentGroupName",
             "dataType": "string",
-            "sourceColumn": "GarmentGroupName"
+            "sourceColumn": "GarmentGroupName",
+            "summarizeBy": "none"
           },
           {
             "name": "DetailDesc",
             "dataType": "string",
-            "sourceColumn": "DetailDesc"
+            "sourceColumn": "DetailDesc",
+            "summarizeBy": "none"
+          },
+          {
+            "type": "calculated",
+            "name": "Articulo",
+            "dataType": "string",
+            "expression": "IF(DimArticle[ArticleKey] = -1, \"Sin dato\", DimArticle[ProdName] & \" · \" & DimArticle[ArticleID])",
+            "summarizeBy": "none"
           }
         ],
         "partitions": [
@@ -456,47 +973,70 @@
         ]
       },
       {
-        "name": "Sales DimCustomer",
+        "name": "DimCustomer",
         "columns": [
           {
             "name": "CustomerKey",
             "dataType": "int64",
-            "sourceColumn": "CustomerKey"
+            "sourceColumn": "CustomerKey",
+            "summarizeBy": "none"
           },
           {
             "name": "CustomerID",
             "dataType": "string",
-            "sourceColumn": "CustomerID"
+            "sourceColumn": "CustomerID",
+            "summarizeBy": "none"
           },
           {
             "name": "FN",
             "dataType": "double",
-            "sourceColumn": "FN"
+            "sourceColumn": "FN",
+            "summarizeBy": "none"
           },
           {
             "name": "Active",
             "dataType": "double",
-            "sourceColumn": "Active"
+            "sourceColumn": "Active",
+            "summarizeBy": "none"
           },
           {
             "name": "ClubMemberStatus",
             "dataType": "string",
-            "sourceColumn": "ClubMemberStatus"
+            "sourceColumn": "ClubMemberStatus",
+            "summarizeBy": "none"
           },
           {
             "name": "FashionNewsFrequency",
             "dataType": "string",
-            "sourceColumn": "FashionNewsFrequency"
+            "sourceColumn": "FashionNewsFrequency",
+            "summarizeBy": "none"
           },
           {
             "name": "Age",
             "dataType": "int64",
-            "sourceColumn": "Age"
+            "sourceColumn": "Age",
+            "summarizeBy": "none"
           },
           {
             "name": "PostalCode",
             "dataType": "string",
-            "sourceColumn": "PostalCode"
+            "sourceColumn": "PostalCode",
+            "summarizeBy": "none"
+          },
+          {
+            "type": "calculated",
+            "name": "Orden_Edad",
+            "dataType": "int64",
+            "expression": "VAR E = DimCustomer[Age] RETURN SWITCH(TRUE(), ISBLANK(E) || E < 0, 7, E < 20, 1, E < 30, 2, E < 40, 3, E < 50, 4, E < 60, 5, 6)",
+            "summarizeBy": "none"
+          },
+          {
+            "type": "calculated",
+            "name": "Tramo_Edad",
+            "dataType": "string",
+            "expression": "VAR E = DimCustomer[Age] RETURN SWITCH(TRUE(), ISBLANK(E) || E < 0, \"Sin datos\", E < 20, \"Menores de 20\", E < 30, \"20–29\", E < 40, \"30–39\", E < 50, \"40–49\", E < 60, \"50–59\", \"60 o más\")",
+            "sortByColumn": "Orden_Edad",
+            "summarizeBy": "none"
           }
         ],
         "partitions": [
@@ -517,22 +1057,25 @@
         ]
       },
       {
-        "name": "Sales DimSalesChannel",
+        "name": "DimSalesChannel",
         "columns": [
           {
             "name": "SalesChannelKey",
             "dataType": "int64",
-            "sourceColumn": "SalesChannelKey"
+            "sourceColumn": "SalesChannelKey",
+            "summarizeBy": "none"
           },
           {
             "name": "SalesChannelID",
             "dataType": "int64",
-            "sourceColumn": "SalesChannelID"
+            "sourceColumn": "SalesChannelID",
+            "summarizeBy": "none"
           },
           {
             "name": "SalesChannelName",
             "dataType": "string",
-            "sourceColumn": "SalesChannelName"
+            "sourceColumn": "SalesChannelName",
+            "summarizeBy": "none"
           }
         ],
         "partitions": [
@@ -553,32 +1096,54 @@
         ]
       },
       {
-        "name": "Sales DimTemporada",
+        "name": "DimTemporada",
         "columns": [
           {
             "name": "TemporadaKey",
             "dataType": "int64",
-            "sourceColumn": "TemporadaKey"
+            "sourceColumn": "TemporadaKey",
+            "summarizeBy": "none"
           },
           {
             "name": "TemporadaID",
             "dataType": "int64",
-            "sourceColumn": "TemporadaID"
+            "sourceColumn": "TemporadaID",
+            "summarizeBy": "none"
           },
           {
             "name": "Temporada",
             "dataType": "string",
-            "sourceColumn": "Temporada"
+            "sourceColumn": "Temporada",
+            "summarizeBy": "none"
           },
           {
             "name": "FechaInicio",
             "dataType": "dateTime",
-            "sourceColumn": "FechaInicio"
+            "sourceColumn": "FechaInicio",
+            "formatString": "dd/MM/yyyy",
+            "summarizeBy": "none"
           },
           {
             "name": "FechaFin",
             "dataType": "dateTime",
-            "sourceColumn": "FechaFin"
+            "sourceColumn": "FechaFin",
+            "formatString": "dd/MM/yyyy",
+            "summarizeBy": "none"
+          },
+          {
+            "type": "calculated",
+            "name": "Orden_Estacion",
+            "dataType": "int64",
+            "expression": "VAR T = LOWER(DimTemporada[Temporada]) RETURN SWITCH(TRUE(), CONTAINSSTRING(T, \"verano\"), 1, CONTAINSSTRING(T, \"otoño\") || CONTAINSSTRING(T, \"otono\"), 2, CONTAINSSTRING(T, \"invierno\"), 3, CONTAINSSTRING(T, \"primavera\"), 4, 5)",
+            "summarizeBy": "none"
+          },
+          {
+            "type": "calculated",
+            "name": "Estacion",
+            "dataType": "string",
+            "expression": "VAR T = LOWER(DimTemporada[Temporada]) RETURN SWITCH(TRUE(), CONTAINSSTRING(T, \"verano\"), \"Verano\", CONTAINSSTRING(T, \"otoño\") || CONTAINSSTRING(T, \"otono\"), \"Otoño\", CONTAINSSTRING(T, \"invierno\"), \"Invierno\", CONTAINSSTRING(T, \"primavera\"), \"Primavera\", \"Sin datos\")",
+            "sortByColumn": "Orden_Estacion",
+            "summarizeBy": "none"
           }
         ],
         "partitions": [
@@ -597,43 +1162,153 @@
             }
           }
         ]
+      },
+      {
+        "name": "Periodo_Base",
+        "description": "Calendario independiente para elegir la ventana base. No contiene medidas ni modifica las tablas del DWH.",
+        "columns": [
+          {
+            "type": "calculatedTableColumn",
+            "name": "Fecha",
+            "dataType": "dateTime",
+            "isNameInferred": true,
+            "isDataTypeInferred": true,
+            "sourceColumn": "[Fecha]",
+            "formatString": "dd/MM/yyyy",
+            "summarizeBy": "none"
+          },
+          {
+            "type": "calculatedTableColumn",
+            "name": "Anio",
+            "dataType": "int64",
+            "isNameInferred": true,
+            "isDataTypeInferred": true,
+            "sourceColumn": "[Anio]",
+            "summarizeBy": "none"
+          },
+          {
+            "type": "calculatedTableColumn",
+            "name": "Mes_Anio",
+            "dataType": "int64",
+            "isNameInferred": true,
+            "isDataTypeInferred": true,
+            "sourceColumn": "[Mes_Anio]",
+            "summarizeBy": "none"
+          },
+          {
+            "type": "calculatedTableColumn",
+            "name": "Nombre_Mes",
+            "dataType": "string",
+            "isNameInferred": true,
+            "isDataTypeInferred": true,
+            "sourceColumn": "[Nombre_Mes]",
+            "sortByColumn": "Mes_Anio",
+            "summarizeBy": "none"
+          },
+          {
+            "type": "calculatedTableColumn",
+            "name": "Periodo",
+            "dataType": "string",
+            "isNameInferred": true,
+            "isDataTypeInferred": true,
+            "sourceColumn": "[Periodo]",
+            "sortByColumn": "Periodo_Orden",
+            "summarizeBy": "none"
+          },
+          {
+            "type": "calculatedTableColumn",
+            "name": "Periodo_Orden",
+            "dataType": "int64",
+            "isNameInferred": true,
+            "isDataTypeInferred": true,
+            "sourceColumn": "[Periodo_Orden]",
+            "summarizeBy": "none"
+          },
+          {
+            "type": "calculatedTableColumn",
+            "name": "Mes_Ordinal",
+            "dataType": "int64",
+            "isNameInferred": true,
+            "isDataTypeInferred": true,
+            "sourceColumn": "[Mes_Ordinal]",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Periodo_Base",
+            "mode": "import",
+            "source": {
+              "type": "calculated",
+              "expression": "SELECTCOLUMNS(FILTER(DimFecha, DimFecha[FechaKey] <> -1), \"Fecha\", DimFecha[Fecha], \"Anio\", DimFecha[Anio], \"Mes_Anio\", DimFecha[Mes_Anio], \"Nombre_Mes\", DimFecha[Nombre_Mes], \"Periodo\", DimFecha[Periodo], \"Periodo_Orden\", DimFecha[Periodo_Orden], \"Mes_Ordinal\", DimFecha[Mes_Ordinal])"
+            }
+          }
+        ]
       }
     ],
     "relationships": [
       {
         "name": "c2390447-62f9-470a-81f6-3769e44d4dba",
-        "fromTable": "Sales FactSales",
+        "fromTable": "FactSales",
         "fromColumn": "FechaKey",
-        "toTable": "GENERICO DimFecha",
+        "toTable": "DimFecha",
         "toColumn": "FechaKey"
       },
       {
         "name": "35d8ccb5-ae4b-4218-b556-10f9df0f41fb",
-        "fromTable": "Sales FactSales",
+        "fromTable": "FactSales",
         "fromColumn": "ArticleKey",
-        "toTable": "Sales DimArticle",
+        "toTable": "DimArticle",
         "toColumn": "ArticleKey"
       },
       {
         "name": "bd6c1a00-8e40-43d1-8ab1-2be12db97392",
-        "fromTable": "Sales FactSales",
+        "fromTable": "FactSales",
         "fromColumn": "CustomerKey",
-        "toTable": "Sales DimCustomer",
+        "toTable": "DimCustomer",
         "toColumn": "CustomerKey"
       },
       {
         "name": "5ac0d59e-f55d-47fd-bd52-8b966997d5f7",
-        "fromTable": "Sales FactSales",
+        "fromTable": "FactSales",
         "fromColumn": "SalesChannelKey",
-        "toTable": "Sales DimSalesChannel",
+        "toTable": "DimSalesChannel",
         "toColumn": "SalesChannelKey"
       },
       {
         "name": "7d6b9d2b-edc6-4a16-bdc4-c279ad2b6e62",
-        "fromTable": "Sales FactSales",
+        "fromTable": "FactSales",
         "fromColumn": "TemporadaKey",
-        "toTable": "Sales DimTemporada",
+        "toTable": "DimTemporada",
         "toColumn": "TemporadaKey"
+      },
+      {
+        "name": "034d4839-1758-4da4-b2d6-62578a35accc",
+        "fromTable": "vw_FactSalesGoals",
+        "fromColumn": "CategoryID",
+        "toTable": "vw_DimCategory",
+        "toColumn": "CategoryID"
+      },
+      {
+        "name": "cf71cbd8-81da-4a5f-b30c-3fee8947adfc",
+        "fromTable": "vw_FactSalesGoals",
+        "fromColumn": "MontKey",
+        "toTable": "vw_DimMonth",
+        "toColumn": "FechaKey"
+      },
+      {
+        "name": "593d78c8-3333-4812-a3a1-6589da0e7c82",
+        "fromTable": "vw_FactSalesMonthCategory",
+        "fromColumn": "CategoryID",
+        "toTable": "vw_DimCategory",
+        "toColumn": "CategoryID"
+      },
+      {
+        "name": "6334a3c6-2366-48d9-9fa7-3b8a1a41b72c",
+        "fromTable": "vw_FactSalesMonthCategory",
+        "fromColumn": "MontKey",
+        "toTable": "vw_DimMonth",
+        "toColumn": "FechaKey"
       }
     ]
   },
