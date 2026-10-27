@@ -1,4 +1,4 @@
-﻿-- Base de datos
+-- Base de datos
 USE [master];
 GO
 IF DB_ID(N'STAGE_HM') IS NULL
@@ -110,4 +110,11 @@ CREATE TABLE [SALES].[StageTransaction](
     [sales_channel_id] NVARCHAR(500) NULL,
     [TemporadaID]      NVARCHAR(500) NULL
 );
+GO
+
+-- Indice para leer ventas por fecha
+CREATE NONCLUSTERED INDEX IX_StageTransaction_Fecha
+ON SALES.StageTransaction(t_dat)
+INCLUDE(customer_id,article_id,price,sales_channel_id,TemporadaID)
+WITH(MAXDOP=2);
 GO
